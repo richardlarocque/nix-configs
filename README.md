@@ -2,7 +2,7 @@ Richard's NixOps configs
 ------------------------
 
 These are the configs for my EC2 web server, currently located at
-[[r6l7.com]].
+[r6l7.com](http://r6l7.com).
 
 This is my contribution towards documenting how Nix is used in
 practice.  I'm not an expert, but I can say that this works for me.
