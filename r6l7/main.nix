@@ -12,6 +12,7 @@ in {
       networking.hostId = "3476f7f7";
 
       networking.firewall.enable = true;
+      networking.firewall.allowedTCPPorts = [ 22 80 ];
       services.openssh.enable = true;
       users.mutableUsers = false;
 
