@@ -1,8 +1,9 @@
 { config, pkgs, ... }:
 let
   discere = import ../../discere/default.nix { inherit pkgs; };
+  allocs = import ./allocs.nix;
   pkg = discere.build;
-  port = "3332";
+  port = allocs.ports.discere;
 in {
   environment.systemPackages = [ discere.build pkgs.lighttpd ];
 
