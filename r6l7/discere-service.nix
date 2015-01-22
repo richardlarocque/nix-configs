@@ -1,6 +1,6 @@
 { config, pkgs, ... }:
 let
-  discere = import ../../discere/default.nix { inherit pkgs; };
+  discere = import ../../discere/nix/default.nix { inherit pkgs; };
   allocs = import ./allocs.nix;
   pkg = discere.build;
   port = allocs.ports.discere;
