@@ -14,6 +14,7 @@ in {
     wantedBy = [ "multi-user.target" ];
     script = "${pkg}/bin/discere-server";
     serviceConfig.Restart = "on-failure";
+    serviceConfig.User = "discere";
 
     # HACK.  Otherwise, node won't be able to find top level node_modules
     # and will fail to load jade where it's needed (from Express' context).
@@ -29,4 +30,10 @@ in {
       proxy.server = ( "" => ( ( "host" => "127.0.0.1", "port" => ${port} ) ) )
     }
   '';
+
+  users.extraUsers.discere = {
+    group = "discere";
+    description = "Discere privilege separation user";
+  };
+  users.extraGroups.discere.name = "discere";
 }

@@ -14,6 +14,7 @@ in {
     wantedBy = [ "multi-user.target" ];
     script = "${pkg}/bin/vox-server";
     serviceConfig.Restart = "on-failure";
+    serviceConfig.User = "vox";
 
     # HACK.  Otherwise, node won't be able to find top level node_modules
     # and will fail to load jade where it's needed (from Express' context).
