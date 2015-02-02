@@ -1,19 +1,14 @@
-let
-  region = "us-west-2";
-  accessKeyId = "rlarocque";
-in {
-  network.description = "NixOS Web Server";
-
-  resources.ec2KeyPairs.my-key-pair = { inherit region accessKeyId; };
+{
+  network.description = "NixOS Web Server (VM)";
 
   webserv =
     { resources, config, pkgs, ... }:
     {
       networking.hostName = "r6l7";
-      networking.hostId = "3476f7f7";
+      networking.hostId = "0f0ab140";
 
       imports = [
-        ./ec2.nix
+        ./vm.nix
 
         ./common.nix
         ./site-module.nix
