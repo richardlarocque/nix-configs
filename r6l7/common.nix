@@ -4,7 +4,8 @@
   networking.firewall.enable = true;
   networking.firewall.allowedTCPPorts = [ 22 80 ];
 
-  users.mutableUsers = false;
+  # Disabled because it breaks an assertion check in deployment.
+  # users.mutableUsers = false;
 
   services.openssh.enable = true;
   services.lighttpd.enable = true;
