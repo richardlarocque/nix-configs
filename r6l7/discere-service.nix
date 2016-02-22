@@ -27,7 +27,9 @@ in {
   services.lighttpd.enableModules = [ "mod_proxy" ];
   services.lighttpd.extraConfig = ''
     $HTTP["host"] =~ "^discere\.r6l7\.com$" {
-      proxy.server = ( "" => ( ( "host" => "127.0.0.1", "port" => ${port} ) ) )
+      $HTTP["url"] !~ "^/.well-known/acme-challenge" {
+        proxy.server = ( "" => ( ( "host" => "127.0.0.1", "port" => ${port} ) ) )
+      }
     }
   '';
 
