@@ -16,10 +16,12 @@ in {
         ./ec2.nix
 
         ./common.nix
+        ./git-user.nix
         ./site-module.nix
         ./discere-service.nix
         ./vox-service.nix
         ./ghost-service.nix
+        ./owncloud-service.nix
       ];
     };
 }

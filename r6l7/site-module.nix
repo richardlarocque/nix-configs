@@ -38,6 +38,7 @@ in
       "vox.r6l7.com" = null;
       "blog.r6l7.com" = null;
       "www.r6l7.com" = null;
+      "cloud.r6l7.com" = null;
     };
     postRun = ''
       cat /var/lib/acme/r6l7.com/fullchain.pem > /var/lib/acme/r6l7.com/pemfile
