@@ -22,6 +22,7 @@ in {
         ./vox-service.nix
         ./ghost-service.nix
         ./owncloud-service.nix
+        ./gitlab-service.nix
       ];
     };
 }
