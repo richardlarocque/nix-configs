@@ -5,12 +5,12 @@ let
   pkg = discere.build;
   port = allocs.ports.discere;
 in {
-  environment.systemPackages = [ discere.build pkgs.lighttpd ];
+  environment.systemPackages = [ discere.build ];
 
   systemd.services.discere = {
     restartIfChanged = true
 ;
-    requires = [ "lighttpd.service" ];
+    # requires = [ "lighttpd.service" ];
     wantedBy = [ "multi-user.target" ];
     script = "${pkg}/bin/discere-server";
     serviceConfig.Restart = "on-failure";
@@ -24,14 +24,15 @@ in {
     };
   };
 
-  services.lighttpd.enableModules = [ "mod_proxy" ];
-  services.lighttpd.extraConfig = ''
-    $HTTP["host"] =~ "^discere\.r6l7\.com$" {
-      $HTTP["url"] !~ "^/.well-known/acme-challenge" {
-        proxy.server = ( "" => ( ( "host" => "127.0.0.1", "port" => ${port} ) ) )
-      }
-    }
-  '';
+  services.nginx = {
+    enable = true;
+    virtualHosts."discere.r6l7.com" = {
+      port = 443;
+      enableACME = true;
+      forceSSL = true;
+      locations."/".proxyPass = "http://localhost:${port}";
+    };
+  };
 
   users.extraUsers.discere = {
     group = "discere";

@@ -5,5 +5,31 @@ in {
   services.gitlab = {
     enable = true;
     databasePassword = secrets.gitlab.dbPassword;
+    user = "gitlab";
+    group = "gitlab";
+
+    initialRootPassword = "c8ofWA3QRm";
+    https = true;
+    host = "git.r6l7.com";
+    port = 443;
+  };
+
+  users.extraUsers.gitlab = {
+    # group = "gitlab";
+    description = "Gitlab privilege separation user";
+  };
+
+  services.nginx = {
+    enable = true;
+    recommendedGzipSettings = true;
+    recommendedOptimisation = true;
+    recommendedProxySettings = true;
+    recommendedTlsSettings = true;
+    virtualHosts."git.r6l7.com" = {
+      port = 443;
+      enableACME = true;
+      forceSSL = true;
+      locations."/".proxyPass = "http://unix:/run/gitlab/gitlab-workhorse.socket";
+    };
   };
 }

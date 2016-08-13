@@ -21,7 +21,7 @@ in {
         ./discere-service.nix
         ./vox-service.nix
         ./ghost-service.nix
-        ./owncloud-service.nix
+        # ./owncloud-service.nix
         ./gitlab-service.nix
       ];
     };

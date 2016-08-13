@@ -8,6 +8,6 @@
   # users.mutableUsers = false;
 
   services.openssh.enable = true;
-  services.lighttpd.enable = true;
+  # services.lighttpd.enable = true;
   services.tarsnap.enable = true;
 }

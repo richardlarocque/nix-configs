@@ -73,11 +73,11 @@ let
     '';
 
 in {
-  environment.systemPackages = [ ghost pkgs.lighttpd ];
+  # environment.systemPackages = [ ghost pkgs.lighttpd ];
 
   systemd.services.ghost = {
     restartIfChanged = true;
-    requires = [ "lighttpd.service" ];
+    # requires = [ "lighttpd.service" ];
     wantedBy = [ "multi-user.target" ];
     script = "${pkgs.nodejs}/bin/node ${ghost}/lib/node_modules/ghost/index.js";
     serviceConfig = {
@@ -94,21 +94,21 @@ in {
     };
   };
 
-  services.lighttpd.enableModules = [ "mod_proxy" ];
-  services.lighttpd.extraConfig = ''
-    $HTTP["scheme"] == "http" {
-      # capture vhost name with regex conditiona -> %0 in redirect pattern
-      # must be the most inner block to the redirect rule
-      $HTTP["host"] =~ ".*" {
-        url.redirect = (".*" => "https://%0$0")
-      }
-    }
-    $HTTP["host"] =~ "^blog\.r6l7\.com$" {
-      $HTTP["url"] !~ "^/.well-known/acme-challenge" {
-        proxy.server = ( "" => ( ( "host" => "127.0.0.1", "port" => ${port} ) ) )
-      }
-    }
-  '';
+#   services.lighttpd.enableModules = [ "mod_proxy" ];
+#   services.lighttpd.extraConfig = ''
+#     $HTTP["scheme"] == "http" {
+#       # capture vhost name with regex conditiona -> %0 in redirect pattern
+#       # must be the most inner block to the redirect rule
+#       $HTTP["host"] =~ ".*" {
+#         url.redirect = (".*" => "https://%0$0")
+#       }
+#     }
+#     $HTTP["host"] =~ "^blog\.r6l7\.com$" {
+#       $HTTP["url"] !~ "^/.well-known/acme-challenge" {
+#         proxy.server = ( "" => ( ( "host" => "127.0.0.1", "port" => ${port} ) ) )
+#       }
+#     }
+#   '';
 
   users.extraUsers.ghost = {
     group = "ghost";
