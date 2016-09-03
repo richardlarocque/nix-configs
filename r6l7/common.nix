@@ -10,4 +10,6 @@
   services.openssh.enable = true;
   # services.lighttpd.enable = true;
   services.tarsnap.enable = true;
+
+  time.timeZone = "America/Los_Angeles";
 }
