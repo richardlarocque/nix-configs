@@ -5,6 +5,9 @@ in {
   services.gitlab = {
     enable = true;
     databasePassword = secrets.gitlab.dbPassword;
+    secrets.secret = secrets.gitlab.secret;
+    secrets.otp = secrets.gitlab.otp;
+    secrets.db = secrets.gitlab.db;
     user = "gitlab";
     group = "gitlab";
 
