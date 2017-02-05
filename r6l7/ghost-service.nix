@@ -110,7 +110,7 @@ in {
   };
   users.extraGroups.ghost.name = "ghost";
 
-  services.tarsnap.config.ghost = {
+  services.tarsnap.archives.ghost = {
     directories = [ contentPath ];
   };
 }
