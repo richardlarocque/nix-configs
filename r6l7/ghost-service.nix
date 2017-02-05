@@ -2,7 +2,7 @@
 let
   secrets = import ./secrets.nix;
   allocs = import ./allocs.nix;
-  ghost = import ./ghost/default.nix { inherit pkgs; };
+  ghost = import ./ghost/override.nix { inherit pkgs; };
   port = allocs.ports.ghost;
 
   contentPath = "/var/ghost/content";
