@@ -3,6 +3,7 @@ let
   accessKeyId = "rlarocque";
 in {
   network.description = "NixOS Web Server";
+  network.enableRollback = true;
 
   resources.ec2KeyPairs.my-key-pair = { inherit region accessKeyId; };
 
