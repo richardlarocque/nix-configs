@@ -2,7 +2,7 @@
 # Since these properties are non-mergeable, we define them here.
 {
   networking.firewall.enable = true;
-  networking.firewall.allowedTCPPorts = [ 22 80 443 ];
+  networking.firewall.allowedTCPPorts = [ 22 80 443 8883 ];
 
   # Disabled because it breaks an assertion check in deployment.
   # users.mutableUsers = false;

@@ -24,6 +24,7 @@ in {
         ./ghost-service.nix
         # ./owncloud-service.nix
         ./gitlab-service.nix
+        ./mosquitto-service.nix
       ];
     };
 }
