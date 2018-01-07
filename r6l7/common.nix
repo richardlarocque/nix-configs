@@ -1,6 +1,8 @@
 { config, pkgs, ... }:
 # Since these properties are non-mergeable, we define them here.
-{
+let
+  secrets = import ./secrets.nix;
+in {
   networking.firewall.enable = true;
   networking.firewall.allowedTCPPorts = [ 22 80 443 8883 ];
 

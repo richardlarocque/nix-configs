@@ -20,11 +20,11 @@ in {
         ./git-user.nix
         ./site-module.nix
         ./discere-service.nix
-        # ./vox-service.nix # TODO: FIXME
+        ./vox-service.nix # TODO: FIXME
         ./ghost-service.nix
+        # ./gitlab-service.nix # TODO: FIXME
+        # ./mosquitto-service.nix # TODO: FIXME
         # ./owncloud-service.nix
-        ./gitlab-service.nix
-        ./mosquitto-service.nix
       ];
     };
 }

@@ -1,8 +1,8 @@
 { config, pkgs, ... }:
 let
-  vox = import ../../vox/default.nix { inherit pkgs; };
+  vox = import ../../vox/override.nix { inherit pkgs; };
   allocs = import ./allocs.nix;
-  pkg = vox.build;
+  pkg = vox.package;
   port = allocs.ports.vox;
 in {
   systemd.services.vox = {
