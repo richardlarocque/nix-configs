@@ -97,9 +97,9 @@ in {
   services.nginx = {
     enable = true;
     virtualHosts."blog.r6l7.com" = {
-      port = 443;
       enableACME = true;
-      forceSSL = true;
+      addSSL = true;
+      http2 = false;
       locations."/".proxyPass = "http://localhost:${port}";
     };
   };

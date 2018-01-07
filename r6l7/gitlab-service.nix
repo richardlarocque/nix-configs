@@ -8,6 +8,7 @@ in {
     secrets.secret = secrets.gitlab.secret;
     secrets.otp = secrets.gitlab.otp;
     secrets.db = secrets.gitlab.db;
+    secrets.jws = secrets.gitlab.jws;
     user = "gitlab";
     group = "gitlab";
 
@@ -29,9 +30,9 @@ in {
     recommendedProxySettings = true;
     recommendedTlsSettings = true;
     virtualHosts."git.r6l7.com" = {
-      port = 443;
       enableACME = true;
       forceSSL = true;
+      http2 = false;
       locations."/".proxyPass = "http://unix:/run/gitlab/gitlab-workhorse.socket";
     };
   };

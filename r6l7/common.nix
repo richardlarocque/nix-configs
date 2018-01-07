@@ -11,5 +11,13 @@
   # services.lighttpd.enable = true;
   services.tarsnap.enable = true;
 
+  #services.nginx.recommendedGzipSettings = true;
+  #services.nginx.recommendedOptimisation = true;
+  #services.nginx.recommendedProxyConfig = true;
+  #services.nginx.recommendedTlsSettings = true;
+
   time.timeZone = "America/Los_Angeles";
+
+  # FIXME: DO NOT KEEP THIS
+  security.acme.production = false;
 }

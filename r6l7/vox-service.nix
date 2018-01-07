@@ -5,8 +5,6 @@ let
   pkg = vox.build;
   port = allocs.ports.vox;
 in {
-  environment.systemPackages = [ vox.build pkgs.lighttpd ];
-
   systemd.services.vox = {
     restartIfChanged = true;
     wantedBy = [ "multi-user.target" ];
@@ -25,9 +23,9 @@ in {
   services.nginx = {
     enable = true;
     virtualHosts."vox.r6l7.com" = {
-      port = 443;
       enableACME = true;
-      forceSSL = true;
+      addSSL = true;
+      http2 = false;
       locations."/".proxyPass = "http://localhost:${port}";
     };
   };

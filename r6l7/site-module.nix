@@ -7,9 +7,9 @@ in
   services.nginx = {
     enable = true;
     virtualHosts."r6l7.com" = {
-      port = 443;
-      enableACME = true;
-      forceSSL = true;
+      # enableACME = true;
+      # forceSSL = true;
+      http2 = false; # Temporary disable; this is buggy and breaks all non-SSL HTTP traffic.
       root = webroot.build;
     };
   };
