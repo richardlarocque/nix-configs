@@ -28,8 +28,7 @@ in {
     enable = true;
     virtualHosts."discere.r6l7.com" = {
       enableACME = true;
-      http2 = false;
-      addSSL = true;
+      forceSSL = true;
       locations."/".proxyPass = "http://localhost:${port}";
     };
   };

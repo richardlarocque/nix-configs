@@ -1,6 +1,8 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 let
   secrets = import ./secrets.nix;
+  user = "gitlab";
+  group = "gitlab";
 in {
   services.gitlab = {
     enable = true;
@@ -9,8 +11,8 @@ in {
     secrets.otp = secrets.gitlab.otp;
     secrets.db = secrets.gitlab.db;
     secrets.jws = secrets.gitlab.jws;
-    user = "gitlab";
-    group = "gitlab";
+    user = user;
+    group = group;
 
     initialRootPassword = "c8ofWA3QRm";
     https = true;
@@ -32,7 +34,6 @@ in {
     virtualHosts."git.r6l7.com" = {
       enableACME = true;
       forceSSL = true;
-      http2 = false;
       locations."/".proxyPass = "http://unix:/run/gitlab/gitlab-workhorse.socket";
     };
   };

@@ -19,11 +19,11 @@ in {
         ./common.nix
         ./site-module.nix
         ./discere-service.nix
-        ./vox-service.nix # TODO: FIXME
+        ./vox-service.nix
         ./ghost-service.nix
-        # ./gitlab-service.nix # TODO: FIXME
+        ./gitlab-service.nix
+        ./gitlab-backup-service.nix
         # ./mosquitto-service.nix # TODO: FIXME
-        # ./owncloud-service.nix
       ];
     };
 }

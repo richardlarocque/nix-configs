@@ -21,5 +21,5 @@ in {
   time.timeZone = "America/Los_Angeles";
 
   # FIXME: DO NOT KEEP THIS
-  security.acme.production = false;
+  # security.acme.production = false;
 }

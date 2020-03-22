@@ -98,9 +98,8 @@ in {
     enable = true;
     virtualHosts."blog.r6l7.com" = {
       enableACME = true;
-      addSSL = true;
-      http2 = false;
-      locations."/".proxyPass = "http://localhost:${port}";
+      forceSSL = true;
+      locations."/".proxyPass = "http://127.0.0.1:${port}";
     };
   };
 

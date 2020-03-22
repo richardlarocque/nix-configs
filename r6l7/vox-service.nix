@@ -24,8 +24,7 @@ in {
     enable = true;
     virtualHosts."vox.r6l7.com" = {
       enableACME = true;
-      addSSL = true;
-      http2 = false;
+      forceSSL = true;
       locations."/".proxyPass = "http://localhost:${port}";
     };
   };
