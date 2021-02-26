@@ -17,6 +17,7 @@ in {
   #services.nginx.recommendedOptimisation = true;
   #services.nginx.recommendedProxyConfig = true;
   #services.nginx.recommendedTlsSettings = true;
+  services.nginx.recommendedProxySettings = true;
 
   time.timeZone = "America/Los_Angeles";
 

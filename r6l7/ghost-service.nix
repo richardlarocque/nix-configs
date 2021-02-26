@@ -2,13 +2,14 @@
 let
   secrets = import ./secrets.nix;
   allocs = import ./allocs.nix;
-  ghost = import ./ghost/override.nix { inherit pkgs; };
+  ghost = import ../../ghost/default.nix { inherit pkgs; };
+  pkg = ghost.package;
   port = allocs.ports.ghost;
 
   contentPath = "/var/ghost/content";
 
   params = {
-    url = "http://blog.r6l7.com";
+    url = "https://blog.r6l7.com";
     server.host = "127.0.0.1";
     server.port = allocs.ports.ghost;
     mailgun.user = secrets.mailgun.user;
@@ -16,60 +17,45 @@ let
     inherit contentPath;
   };
 
-  configJs = pkgs.writeText "config.js" ''
-    var path = require('path'), config;
-
-    config = {
-        production: {
-            url: '${params.url}',
-            mail: {
-                transport: 'SMTP',
-                options: {
-                    service: 'Mailgun',
-                    auth: {
-                        user: '${params.mailgun.user}',
-                        pass: '${params.mailgun.password}'
-                    }
+  configJson = pkgs.writeText "config.json" ''
+    {
+        "url": "${params.url}",
+        "mail": {
+            "transport": "SMTP",
+            "options": {
+                "service": "Mailgun",
+                "auth": {
+                    "user": "${params.mailgun.user}",
+                    "pass": "${params.mailgun.password}"
                 }
-            },
-            database: {
-                client: 'sqlite3',
-                connection: {
-                    filename: path.join('${contentPath}', '/data/ghost.db')
-                },
-                debug: false
-            },
-            paths: {
-                contentPath: path.join('${contentPath}')
-            },
-
-            server: {
-                host: '${params.server.host}',
-                port: '${params.server.port}'
             }
-        }
-    };
+        },
+        "database": {
+            "client": "sqlite3",
+            "connection": {
+                "filename": "${contentPath}/data/ghost.db"
+            },
+            "debug": false
+        },
+        "paths": {
+            "contentPath": "${contentPath}"
+        },
+        "logging": {
+            "transports": ["stdout"]
+        },
 
-    module.exports = config;
+        "server": {
+            "host": "${params.server.host}",
+            "port": "${params.server.port}"
+        }
+    }
   '';
 
   # Impure setup script required for making Ghost not crash at initial startup.
   setupScript = pkgs.writeScript "ghost-setup.sh" ''
     #! ${pkgs.stdenv.shell} -e
 
-    CONTENT_PATH=${contentPath};
-
-    if [ ! -n "$CONTENT_PATH" ]; then
-      exit -1
-    fi
-
-    mkdir -p "$CONTENT_PATH/"{apps,data,images,themes}
-    if [ ! -e "$CONTENT_PATH/themes/casper" ]; then
-      cp -r "${ghost}/lib/node_modules/ghost/content/themes/casper" \
-          "$CONTENT_PATH/themes/casper"
-    fi
-
-    chown -R ghost:ghost "$CONTENT_PATH"
+    cp ${configJson} /home/ghost/config.production.json
     '';
 
 in {
@@ -79,18 +65,19 @@ in {
     restartIfChanged = true;
     # requires = [ "lighttpd.service" ];
     wantedBy = [ "multi-user.target" ];
-    script = "${pkgs.nodejs}/bin/node ${ghost}/lib/node_modules/ghost/index.js";
+    script = "${pkgs.nodejs-12_x}/bin/node ${pkg}/lib/node_modules/ghost/index.js";
     serviceConfig = {
       Restart = "on-failure";
       PermissionsStartOnly = "true";
       User = "ghost";
+      WorkingDirectory = "/home/ghost";
       ExecStartPre = setupScript;
     };
     environment = {
       PORT = port;
       NODE_ENV = "production";
-      NODE_PATH = "${ghost}/lib/node_modules/ghost/node_modules";
-      GHOST_CONFIG = configJs;
+      NODE_PATH = "${pkg}/lib/node_modules/ghost/node_modules";
+      # DEBUG = "ghost:*,ghost-config";  # TODO: Don't leave this forever!
     };
   };
 
@@ -106,6 +93,8 @@ in {
   users.extraUsers.ghost = {
     group = "ghost";
     description = "Ghost privilege separation user";
+    home = "/home/ghost";
+    createHome = true;
   };
   users.extraGroups.ghost.name = "ghost";
 
