@@ -1,11 +1,11 @@
 let
-  region = "us-west-2";
-  accessKeyId = "rlarocque";
+  #region = "us-west-2";
+  #accessKeyId = "rlarocque";
 in {
   network.description = "NixOS Web Server";
   network.enableRollback = true;
 
-  resources.ec2KeyPairs.my-key-pair = { inherit region accessKeyId; };
+  #resources.ec2KeyPairs.my-key-pair = { inherit region accessKeyId; };
 
   webserv =
     { resources, config, pkgs, ... }:
