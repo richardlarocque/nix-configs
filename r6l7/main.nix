@@ -11,13 +11,14 @@ in {
     { resources, config, pkgs, ... }:
     {
       networking.hostName = "r6l7";
-      networking.hostId = "3476f7f7";
+      networking.hostId = "1c6929e8";
 
       # Permit Tarsnap.
       nixpkgs.config.allowUnfree = true;
 
       imports = [
-        ./ec2.nix
+        #./ec2.nix
+        ./virtualbox.nix
 
         ./common.nix
         ./site-module.nix
