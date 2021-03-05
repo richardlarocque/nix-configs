@@ -27,8 +27,8 @@ in {
   services.nginx = {
     enable = true;
     virtualHosts."discere.r6l7.com" = {
-      enableACME = true;
-      forceSSL = true;
+      #enableACME = true;
+      #forceSSL = true;
       locations."/".proxyPass = "http://localhost:${port}";
     };
   };

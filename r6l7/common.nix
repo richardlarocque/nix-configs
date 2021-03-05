@@ -20,7 +20,4 @@ in {
   services.nginx.recommendedProxySettings = true;
 
   time.timeZone = "America/Los_Angeles";
-
-  # FIXME: DO NOT KEEP THIS
-  # security.acme.production = false;
 }

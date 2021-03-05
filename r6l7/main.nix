@@ -2,7 +2,7 @@ let
   #region = "us-west-2";
   #accessKeyId = "rlarocque";
 in {
-  network.description = "NixOS Web Server";
+  network.description = "NixOS r6l7.com Web Server";
   network.enableRollback = true;
 
   #resources.ec2KeyPairs.my-key-pair = { inherit region accessKeyId; };

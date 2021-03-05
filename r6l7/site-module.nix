@@ -7,8 +7,8 @@ in
   services.nginx = {
     enable = true;
     virtualHosts."r6l7.com" = {
-      enableACME = true;
-      forceSSL = true;
+      #enableACME = true;
+      #forceSSL = true;
       root = webroot.build;
     };
   };

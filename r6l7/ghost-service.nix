@@ -84,8 +84,8 @@ in {
   services.nginx = {
     enable = true;
     virtualHosts."blog.r6l7.com" = {
-      enableACME = true;
-      forceSSL = true;
+      #enableACME = true;
+      #forceSSL = true;
       locations."/".proxyPass = "http://127.0.0.1:${port}";
     };
   };
