@@ -23,7 +23,8 @@ in {
         ./common.nix
         ./site-module.nix
 
-        ./discere-service.nix
+        # SQLite node module broken, apparently.
+        # ./discere-service.nix
 
         ./vox-service.nix
 

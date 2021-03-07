@@ -9,7 +9,8 @@ let
   contentPath = "/var/ghost/content";
 
   params = {
-    url = "https://blog.r6l7.com";
+    # FIXME: Needs https
+    url = "http://blog.r6l7.com";
     server.host = "127.0.0.1";
     server.port = allocs.ports.ghost;
     mailgun.user = secrets.mailgun.user;
@@ -53,9 +54,16 @@ let
 
   # Impure setup script required for making Ghost not crash at initial startup.
   setupScript = pkgs.writeScript "ghost-setup.sh" ''
-    #! ${pkgs.stdenv.shell} -e
+    #! ${pkgs.stdenv.shell} -ex
 
     cp ${configJson} /home/ghost/config.production.json
+    if [ ! -d ${contentPath} ]; then
+      mkdir -p ${contentPath}
+      cp -r ${pkg}/lib/node_modules/ghost/content/* ${contentPath}
+      chown -R ghost:ghost ${contentPath}
+      chmod u+w ${contentPath}/data
+      chmod u+w ${contentPath}/settings
+    fi
     '';
 
 in {
