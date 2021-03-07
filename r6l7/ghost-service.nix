@@ -10,7 +10,7 @@ let
 
   params = {
     # FIXME: Needs https
-    url = "http://blog.r6l7.com";
+    url = "http://blog.a8l7.com";
     server.host = "127.0.0.1";
     server.port = allocs.ports.ghost;
     mailgun.user = secrets.mailgun.user;
@@ -63,6 +63,8 @@ let
       chown -R ghost:ghost ${contentPath}
       chmod u+w ${contentPath}/data
       chmod u+w ${contentPath}/settings
+      chmod u+w ${contentPath}/images
+      chmod u+w ${contentPath}/themes
     fi
     '';
 
@@ -91,7 +93,7 @@ in {
 
   services.nginx = {
     enable = true;
-    virtualHosts."blog.r6l7.com" = {
+    virtualHosts."blog.a8l7.com" = {
       #enableACME = true;
       #forceSSL = true;
       locations."/".proxyPass = "http://127.0.0.1:${port}";
