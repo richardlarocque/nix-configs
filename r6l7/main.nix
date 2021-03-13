@@ -36,6 +36,10 @@ in {
         # ./gitlab-backup-service.nix
 
         # ./mosquitto-service.nix # TODO: FIXME
+
+        ./modules/vouch.nix
       ];
+
+      services.vouch.enable = true;
     };
 }

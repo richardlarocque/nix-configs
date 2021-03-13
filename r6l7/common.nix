@@ -4,7 +4,8 @@ let
   # secrets = import ./secrets.nix;
 in {
   networking.firewall.enable = true;
-  networking.firewall.allowedTCPPorts = [ 22 80 443 8883 ];
+  # BIG FIXME
+  networking.firewall.allowedTCPPorts = [ 22 80 443 8883 9090 ];
 
   # Disabled because it breaks an assertion check in deployment.
   # users.mutableUsers = false;
