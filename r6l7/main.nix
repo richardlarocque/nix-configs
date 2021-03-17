@@ -40,6 +40,8 @@ in {
         ./modules/vouch.nix
       ];
 
-      services.vouch.enable = true;
+      services.vouch-proxy = {
+        enable = true;
+      };
     };
 }
