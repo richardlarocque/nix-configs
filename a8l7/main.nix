@@ -11,8 +11,8 @@ in {
   webserv =
     { resources, config, pkgs, ... }:
     {
-      networking.hostName = "r6l7";
-      networking.hostId = "1c6929e8";
+      networking.hostName = "rickserve";
+      networking.hostId = "db56ba41";
 
       # Permit Tarsnap.
       nixpkgs.config.allowUnfree = true;
@@ -21,23 +21,23 @@ in {
         #./ec2.nix
         ./virtualbox.nix
 
-        ./common.nix
-        ./site-module.nix
+        #./common.nix
+        #./site-module.nix
 
         # SQLite node module broken, apparently.
         # ./discere-service.nix
 
-        ./vox-service.nix
+        #./vox-service.nix
 
-        ./ghost-service.nix
+        #./ghost-service.nix
 
         # GitLab doesn't work so good without lots of RAM.
         # Switched to gitlab.com for now.  They have free repos.
         # ./gitlab-service.nix
         # ./gitlab-backup-service.nix
 
-        # ./mosquitto-service.nix # TODO: FIXME
-
         ./modules/vouch.nix
+        ./services/blog-a8l7.nix
       ];
+    };
 }
