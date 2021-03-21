@@ -4,6 +4,8 @@ pkgs.buildGoModule rec {
   pname = "vouch-proxy";
   version = "0.23.1";
 
+  nativeBuildInputs = [ pkgs.makeWrapper ];
+
   src = pkgs.fetchFromGitHub {
     owner = "vouch";
     repo = "vouch-proxy";
@@ -15,9 +17,17 @@ pkgs.buildGoModule rec {
 
   doCheck = false;
 
+  # Vouch-proxy expects these static files to be either in the same directory as
+  # the root or in the directory pointed to by `VOUCH_ROOT`.  We choose to put the
+  # static files in a sensible location and set the env var accordingly.
+  #
+  # Note that `VOUCH_ROOT` is also the path to the JWT secret file, which
+  # vouch-proxy will try to autogenerate if it's not otherwise configured.  This
+  # `VOUCH_ROOT` is immutable so that mechanism will fail.  Be sure to set
+  # `VOUCH_JWT_SECRET` or the equivalent YAML config to avoid trouble.
   postInstall = ''
-    echo cp -r static/ templates/ $out
     cp -r static/ templates/ $out
+    wrapProgram "$out/bin/vouch-proxy" --set VOUCH_ROOT "$out"
   '';
 
   meta = with pkgs.lib; {
