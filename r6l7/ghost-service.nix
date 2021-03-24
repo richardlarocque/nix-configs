@@ -91,6 +91,9 @@ in {
     };
   };
 
+  networking.firewall.enable = true;
+  networking.firewall.allowedTCPPorts = [ 22 80 443 ];
+
   services.nginx = {
     enable = true;
     virtualHosts."blog.a8l7.com" = {
