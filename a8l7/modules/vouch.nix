@@ -2,7 +2,7 @@
 with lib;
 let
   cfg = config.services.vouch-proxy;
-  vouch = import ../pkgs/vouch-pkg.nix { inherit pkgs; };
+  vouch = import ../pkgs/vouch.nix { inherit pkgs; };
   configFile = pkgs.writeText "vouch-proxy-config.yml" cfg.extraConfig;
 in {
   options.services.vouch-proxy = {
@@ -50,7 +50,7 @@ in {
 
       serviceConfig = {
         Restart = "on-failure";
-        User = "vouch";
+        User = cfg.user;
         EnvironmentFile = cfg.environmentFile;
       };
     };

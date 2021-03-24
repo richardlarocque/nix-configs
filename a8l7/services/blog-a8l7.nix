@@ -7,7 +7,7 @@ let
   ghostPort = 3330;
   ghostHost = "127.0.0.1";
   ghostUrl = "http://blog.a8l7.com";
-  ghostMailgun = ../secrets/mailgun.nix;
+  ghostMailgun = import ../secrets/mailgun.nix;
   ghost = import ../pkgs/ghost/default.nix { inherit pkgs; };
   ghostPkg = ghost.package;
 
@@ -77,7 +77,8 @@ in {
       ExecStartPre = setupScript;
     };
     environment = {
-      PORT = ghostPort;
+      # FIXME: Is this necessary?
+      # PORT = ghostPort;
       NODE_ENV = "production";
       NODE_PATH = "${ghostPkg}/lib/node_modules/ghost/node_modules";
     };
@@ -124,68 +125,67 @@ in {
         jwt:
           maxAge: 240
       '';
+  };
+
+  deployment.keys.vouch-secrets = {
+    text = builtins.readFile ../secrets/vouch-a8l7-envs;
+    user = "vouch";
+    group = "vouch";
+    permissions = "0440";
+  };
+
+  systemd.services.vouch-proxy.after = ["vouch-secrets-key.service"];
+  systemd.services.vouch-proxy.wants = ["vouch-secrets-key.service"];
+
+  services.nginx.enable = true;
+
+  services.nginx.virtualHosts."vouch.a8l7.com" = {
+    locations."/" = {
+      proxyPass = "http://127.0.0.1:${toString vouchPort}";
     };
+  };
 
-    deployment.keys.vouch-secrets = {
-      text = builtins.readFile ./secrets/vouch-a8l7-envs;
-      user = "vouch";
-      group = "vouch";
-      permissions = "0440";
-    };
+  services.nginx.virtualHosts."blog.a8l7.com" = {
+    #enableACME = true;
+    #forceSSL = true;
 
-    systemd.services.vouch-proxy.after = ["vouch-secrets-key.service"];
-    systemd.services.vouch-proxy.wants = ["vouch-secrets-key.service"];
+    extraConfig = ''
+      auth_request /validate;
 
-    services.nginx.enable = true;
+      error_page 401 = @error401;
 
-    services.nginx.virtualHosts."vouch.a8l7.com" = {
-      locations."/" = {
-        proxyPass = "http://127.0.0.1:${toString vouchPort}";
-      };
-    };
+      location @error401 {
+        # redirect to Vouch Proxy for login
+        #return 302 https://vouch.a8l7.com/login?url=$scheme://$http_host$request_uri&vouch-failcount=$auth_resp_failcount&X-Vouch-Token=$auth_resp_jwt&error=$auth_resp_err;
+        # FIXME: HTTPS!
+        return 302 http://vouch.a8l7.com/login?url=$scheme://$http_host$request_uri&vouch-failcount=$auth_resp_failcount&X-Vouch-Token=$auth_resp_jwt&error=$auth_resp_err;
+      }
+    '';
 
-    services.nginx.virtualHosts."blog.a8l7.com" = {
-      #enableACME = true;
-      #forceSSL = true;
+    locations."/".proxyPass = "http://127.0.0.1:${toString ghostPort}";
 
+    locations."/validate" = {
       extraConfig = ''
-        auth_request /validate;
+        # forward the /validate request to Vouch Proxy
+        proxy_pass http://${vouchHost}:${toString vouchPort}/validate;
+        ## be sure to pass the original host header
+        ## proxy_set_header Host $http_host;
 
-        error_page 401 = @error401;
+        # nginx thinks http_host could be spoofed and I should not trust it?
+        proxy_set_header Host $host;
 
-        location @error401 {
-          # redirect to Vouch Proxy for login
-          #return 302 https://vouch.a8l7.com/login?url=$scheme://$http_host$request_uri&vouch-failcount=$auth_resp_failcount&X-Vouch-Token=$auth_resp_jwt&error=$auth_resp_err;
-          # FIXME: HTTPS!
-          return 302 http://vouch.a8l7.com/login?url=$scheme://$http_host$request_uri&vouch-failcount=$auth_resp_failcount&X-Vouch-Token=$auth_resp_jwt&error=$auth_resp_err;
-        }
+        # Vouch Proxy only acts on the request headers
+        proxy_pass_request_body off;
+        proxy_set_header Content-Length "";
+
+        # optionally add X-Vouch-User as returned by Vouch Proxy along with the request
+        auth_request_set $auth_resp_x_vouch_user $upstream_http_x_vouch_user;
+
+        # these return values are used by the @error401 call
+        auth_request_set $auth_resp_jwt $upstream_http_x_vouch_jwt;
+        auth_request_set $auth_resp_err $upstream_http_x_vouch_err;
+        auth_request_set $auth_resp_failcount $upstream_http_x_vouch_failcount;
       '';
-
-      locations."/".proxyPass = "http://127.0.0.1:${ghostPort}";
-
-      locations."/validate" = {
-        extraConfig = ''
-          # forward the /validate request to Vouch Proxy
-          proxy_pass http://${vouchHost}:${toString vouchPort}/validate;
-          ## be sure to pass the original host header
-          ## proxy_set_header Host $http_host;
-
-          # nginx thinks http_host could be spoofed and I should not trust it?
-          proxy_set_header Host $host;
-
-          # Vouch Proxy only acts on the request headers
-          proxy_pass_request_body off;
-          proxy_set_header Content-Length "";
-
-          # optionally add X-Vouch-User as returned by Vouch Proxy along with the request
-          auth_request_set $auth_resp_x_vouch_user $upstream_http_x_vouch_user;
-
-          # these return values are used by the @error401 call
-          auth_request_set $auth_resp_jwt $upstream_http_x_vouch_jwt;
-          auth_request_set $auth_resp_err $upstream_http_x_vouch_err;
-          auth_request_set $auth_resp_failcount $upstream_http_x_vouch_failcount;
-        '';
-      };
     };
   };
 }

@@ -37,7 +37,18 @@ in {
         # ./gitlab-backup-service.nix
 
         ./modules/vouch.nix
-        ./services/blog-a8l7.nix
+        ./modules/ghost-sqlite.nix
+
+        # ./services/blog-a8l7.nix
       ];
+
+      services.ghost-sqlite.enable = true;
+      services.ghost-sqlite.package = (import ../../ghost { inherit pkgs; }).package;
+      services.ghost-sqlite.blogs.a8l7 = {
+        url = "http://blog.a8l7.com"; # FIXME: HTTPS.
+        port = 3040;
+        contentPath = /var/ghost/a8l7;
+        environmentFile = /dev/null;
+      };
     };
 }
