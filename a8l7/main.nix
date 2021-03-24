@@ -48,7 +48,14 @@ in {
         url = "http://blog.a8l7.com"; # FIXME: HTTPS.
         port = 3040;
         contentPath = /var/ghost/a8l7;
-        environmentFile = /dev/null;
+        environmentFile = /run/keys/ghost-secrets;
+      };
+
+      deployment.keys.ghost-secrets = {
+        text = builtins.readFile ./secrets/ghost-env-vars;
+        user = "ghost";
+        group = "ghost";
+        permissions = "0440";
       };
     };
 }

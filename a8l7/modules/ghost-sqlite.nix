@@ -4,23 +4,11 @@ let
   cfg = config.services.ghost-sqlite;
   blogConfigs = cfg.blogs;
 
-  ghostMailgun = import ../secrets/mailgun.nix;
   ghost = import ../pkgs/ghost/default.nix { inherit pkgs; };
 
-  # FIXME: Merge in secrets at the right time.
   configJsonDir = blogConfig: (pkgs.writeTextDir "config/config.production.json" ''
     {
         "url": "${blogConfig.url}",
-        "mail": {
-            "transport": "SMTP",
-            "options": {
-                "service": "Mailgun",
-                "auth": {
-                    "user": "${ghostMailgun.user}",
-                    "pass": "${ghostMailgun.password}"
-                }
-            }
-        },
         "database": {
             "client": "sqlite3",
             "connection": {
@@ -42,11 +30,8 @@ let
     }
   '') + "/config";
 
-  # FIXME?
-  #cp ${configJson blogConfig} /home/ghost/config.production.json
   setupScript = blogConfig: (pkgs.writeScript "ghost-setup.sh" ''
     #! ${pkgs.stdenv.shell} -ex
-
 
     if [ ! -d ${toString blogConfig.contentPath} ]; then
       mkdir -p ${toString blogConfig.contentPath}
@@ -160,8 +145,6 @@ in {
         EnvironmentFile = instanceConfig.environmentFile;
       };
       environment = {
-        # FIXME: Is this necessary?
-        # PORT = ghostPort;
         NODE_ENV = "production";
         NODE_PATH = "${cfg.package}/lib/node_modules/ghost/node_modules";
       };
