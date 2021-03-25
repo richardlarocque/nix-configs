@@ -70,6 +70,5 @@ in {
     users.groups = optionalAttrs (cfg.group == "vouch") {
       vouch = {};
     };
-
   };
 }
