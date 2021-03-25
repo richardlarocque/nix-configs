@@ -4,8 +4,6 @@ let
   cfg = config.services.ghost-sqlite;
   blogConfigs = cfg.blogs;
 
-  ghost = import ../pkgs/ghost/default.nix { inherit pkgs; };
-
   configJsonDir = blogConfig: (pkgs.writeTextDir "config/config.production.json" ''
     {
         "url": "${blogConfig.url}",

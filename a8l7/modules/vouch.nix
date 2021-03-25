@@ -2,11 +2,17 @@
 with lib;
 let
   cfg = config.services.vouch-proxy;
-  vouch = import ../pkgs/vouch.nix { inherit pkgs; };
   configFile = pkgs.writeText "vouch-proxy-config.yml" cfg.extraConfig;
 in {
   options.services.vouch-proxy = {
     enable = mkEnableOption "vouch-proxy";
+
+    package = mkOption {
+      type = types.package;
+      description = ''
+        Vouch-proxy package to use.
+      '';
+    };
 
     user = mkOption {
       type = types.str;
@@ -46,7 +52,7 @@ in {
     systemd.services.vouch-proxy = {
       restartIfChanged = true;
       wantedBy = [ "multi-user.target" ];
-      script = "${vouch}/bin/vouch-proxy -config ${configFile}";
+      script = "${cfg.package}/bin/vouch-proxy -config ${configFile}";
 
       serviceConfig = {
         Restart = "on-failure";

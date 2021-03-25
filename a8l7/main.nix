@@ -3,7 +3,7 @@ let
   #accessKeyId = "rlarocque";
 
   vouchPort = 3334;
-  ghostPort = 3335;
+  ghostPorta8l7 = 3335;
 in {
   network.description = "NixOS r6l7.com / a8l7.com Web Server";
   network.enableRollback = true;
@@ -37,13 +37,14 @@ in {
 
       networking.firewall.enable = true;
       networking.firewall.allowedTCPPorts = [ 22 80 443 ];
+      time.timeZone = "America/Los_Angeles";
 
       services.ghost-sqlite = {
         enable = true;
-        package = (import ../../ghost { inherit pkgs; }).package;
+        package = (import ../../ghost/override.nix { inherit pkgs; }).package;
         blogs.a8l7 = {
           url = "http://blog.a8l7.com"; # FIXME: HTTPS.
-          port = ghostPort;
+          port = ghostPorta8l7;
           contentPath = /var/ghost/a8l7;
           environmentFile = /run/keys/ghost-secrets;
         };
@@ -58,6 +59,7 @@ in {
 
       services.vouch-proxy = {
         enable = true;
+        package = (import ./pkgs/vouch.nix { inherit pkgs; });
         environmentFile = /run/keys/vouch-secrets;
         extraConfig = ''
           vouch:
@@ -93,6 +95,10 @@ in {
       };
 
       services.nginx.enable = true;
+      services.nginx.recommendedProxySettings = true;
+
+      # FIXME: Turn this back on!
+      services.tarsnap.enable = false;
 
       services.nginx.virtualHosts."vouch.a8l7.com" = {
         locations."/" = {
@@ -138,7 +144,7 @@ in {
           '';
         };
 
-        locations."/".proxyPass = "http://127.0.0.1:${toString ghostPort}";
+        locations."/".proxyPass = "http://127.0.0.1:${toString ghostPorta8l7}";
       };
     };
 }
