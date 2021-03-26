@@ -11,8 +11,8 @@ in {
       deployment.targetEnv = "virtualbox";
       deployment.virtualbox = {
         memorySize = 2048;
-        virtualbox.vcpu = 2;
-        virtualbox.headless = true;
+        vcpu = 2;
+        headless = true;
       };
 
       networking.hostName = "rickserve";
