@@ -118,6 +118,12 @@ in {
 
       # TODO: Set up virtualHost for a8l7.com!
 
+      services.nginx.virtualHosts."a8l7.com" = {
+        forceSSL = true;
+        enableACME = true;
+        root = pkgs.copyPathToStore ./content/a8l7.com;
+      };
+
       services.nginx.virtualHosts."vouch.a8l7.com" = {
         forceSSL = true;
         enableACME = true;
