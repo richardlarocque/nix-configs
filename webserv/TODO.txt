@@ -1,0 +1,9 @@
+P1
+- Get a root site for a8l7.com.
+- Theme for the blog.
+- Properly invite Lynn.
+- Rotate credentials for Google.
+
+P2
+- Migrate blog.r6l7.com to this machine.
+- Migrate the rest of r6l7.com to this machine.

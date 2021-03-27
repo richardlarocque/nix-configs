@@ -52,6 +52,8 @@ in {
       networking.firewall.enable = true;
       networking.firewall.allowedTCPPorts = [ 22 80 443 ];
       time.timeZone = "America/Los_Angeles";
+      security.acme.acceptTerms = true;
+      security.acme.email = "richard@r6l7.com";
 
       services.ghost-sqlite = {
         enable = true;
@@ -94,6 +96,7 @@ in {
 
             whiteList:
             - richard.larocque@gmail.com
+            - nxlin903@gmail.com
 
             jwt:
               maxAge: 240
@@ -113,16 +116,20 @@ in {
       # FIXME: Turn this back on!
       services.tarsnap.enable = false;
 
+      # TODO: Set up virtualHost for a8l7.com!
+
       services.nginx.virtualHosts."vouch.a8l7.com" = {
+        forceSSL = true;
+        enableACME = true;
         locations."/" = {
           proxyPass = "http://127.0.0.1:${toString vouchPort}";
         };
       };
 
       services.nginx.virtualHosts."blog.a8l7.com" = {
+        forceSSL = true;
+        enableACME = true;
         extraConfig = ''
-          auth_request /validate;
-
           error_page 401 = @error401;
 
           location @error401 {
@@ -155,7 +162,12 @@ in {
           '';
         };
 
-        locations."/".proxyPass = "http://127.0.0.1:${toString ghostPorta8l7}";
+        locations."/" = {
+          proxyPass = "http://127.0.0.1:${toString ghostPorta8l7}";
+          extraConfig = ''
+            auth_request /validate;
+          '';
+        };
       };
     };
 }
