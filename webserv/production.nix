@@ -4,6 +4,8 @@ let
 
   vouchPort = 3334;
   ghostPorta8l7 = 3335;
+
+  a8l7ContentPath = /var/ghost/a8l7;
 in {
   network.description = "NixOS r6l7.com / a8l7.com Web Server";
   network.enableRollback = true;
@@ -61,7 +63,7 @@ in {
         blogs.a8l7 = {
           url = "https://blog.a8l7.com";
           port = ghostPorta8l7;
-          contentPath = /var/ghost/a8l7;
+          contentPath = a8l7ContentPath;
           environmentFile = /run/keys/ghost-secrets;
         };
       };
@@ -97,6 +99,8 @@ in {
             whiteList:
             - richard.larocque@gmail.com
             - nxlin903@gmail.com
+            - larocque.david@gmail.com
+            - pat.larocque59@outlook.com
 
             jwt:
               maxAge: 240
@@ -113,10 +117,16 @@ in {
       services.nginx.enable = true;
       services.nginx.recommendedProxySettings = true;
 
-      # FIXME: Turn this back on!
-      services.tarsnap.enable = false;
+      services.tarsnap.enable = true;
+      services.tarsnap.archives.ghost-a8l7 = {
+        directories = [ (toString a8l7ContentPath) ];
+        keyfile = "/run/keys/tarsnap-ghost-a8l7-secrets";
+      };
 
-      # TODO: Set up virtualHost for a8l7.com!
+      deployment.keys.tarsnap-ghost-a8l7-secrets = {
+        text = builtins.readFile ./secrets/ghost-a8l7-write.key;
+        permissions = "0440";
+      };
 
       services.nginx.virtualHosts."a8l7.com" = {
         forceSSL = true;

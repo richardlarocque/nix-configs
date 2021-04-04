@@ -89,7 +89,7 @@ in {
       };
 
       deployment.keys.vouch-secrets = {
-        text = builtins.readFile secrets/vouch-a8l7-env-vars;
+        text = builtins.readFile secrets/vouch-a8l7-local-env-vars;
         user = "vouch";
         group = "vouch";
         permissions = "0440";
