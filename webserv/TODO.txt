@@ -7,5 +7,6 @@ P1
 [x] Fix mailgun.
 
 P2
+[x] Tarsnap for blog.a8l7.com
 [ ] Migrate blog.r6l7.com to this machine.
 [ ] Migrate the rest of r6l7.com to this machine.

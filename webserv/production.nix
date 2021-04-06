@@ -101,6 +101,7 @@ in {
             - nxlin903@gmail.com
             - larocque.david@gmail.com
             - pat.larocque59@outlook.com
+            - larocquep14@gmail.com
 
             jwt:
               maxAge: 240
@@ -124,7 +125,7 @@ in {
       };
 
       deployment.keys.tarsnap-ghost-a8l7-secrets = {
-        text = builtins.readFile ./secrets/ghost-a8l7-write.key;
+        text = builtins.readFile ./secrets/tarsnap-master.key;
         permissions = "0440";
       };
 
