@@ -9,6 +9,8 @@ let
 
   ghostPortr6l7 = 3336;
   r6l7ContentPath = /var/ghost/r6l7;
+
+  voxPort = 3337;
 in {
   network.description = "NixOS r6l7.com / a8l7.com Web Server";
   network.enableRollback = true;
@@ -48,7 +50,7 @@ in {
         # SQLite node module broken, apparently.
         # ./discere-service.nix
 
-        #./vox-service.nix
+        ./modules/vox.nix
 
         ./modules/vouch.nix
         ./modules/ghost-sqlite.nix
@@ -145,6 +147,18 @@ in {
       deployment.keys.tarsnap-ghost-r6l7-secrets = {
         text = builtins.readFile ./secrets/ghost-r6l7-write.key;
         permissions = "0440";
+      };
+
+      services.vox = {
+        enable = true;
+        port = voxPort;
+        package = (import ../../vox/override.nix { inherit pkgs; }).package;
+      };
+
+      services.nginx.virtualHosts."vox.r6l7.com" = {
+        #enableACME = true;
+        #forceSSL = true;
+        locations."/".proxyPass = "http://localhost:${voxPort}";
       };
 
       services.nginx.virtualHosts."a8l7.com" = {
