@@ -1,0 +1,79 @@
+==================================================================
+https://keybase.io/richardlarocque
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of http://r6l7.com
+  * I am richardlarocque (https://keybase.io/richardlarocque) on keybase.
+  * I have a public key with fingerprint 4D56 E231 2174 09B0 5118  A531 ACBE 41D0 D36B 3978
+
+To claim this, I am signing this object:
+
+{
+    "body": {
+        "key": {
+            "fingerprint": "4d56e231217409b05118a531acbe41d0d36b3978",
+            "host": "keybase.io",
+            "key_id": "acbe41d0d36b3978",
+            "kid": "0101f72bbd909db82459c6ee721dff51cce5bf5b14edd0f1fd3e72366954d8c49f370a",
+            "uid": "edd38e98afd51daba6e9c6e7a66d3300",
+            "username": "richardlarocque"
+        },
+        "revoke": {
+            "sig_ids": [
+                "4ea2056a1d03f08f23de768f4e976aeca836c01efafb9363055c133e9463a2330f"
+            ]
+        },
+        "service": {
+            "hostname": "r6l7.com",
+            "protocol": "http:"
+        },
+        "type": "web_service_binding",
+        "version": 1
+    },
+    "ctime": 1420864170,
+    "expire_in": 157680000,
+    "prev": "5474717040b366d9391630d3b6696b97c6aabd5c5d540c911c17c757594ddedd",
+    "seqno": 4,
+    "tag": "signature"
+}
+
+with the aforementioned key, yielding the PGP signature:
+
+-----BEGIN PGP MESSAGE-----
+Version: Keybase OpenPGP v2.0.1
+Comment: https://keybase.io/crypto
+
+yMN6AnicbZJrTBRXGIYX5CIIYpAVQmwt0xK1QZ2zc18EIRatDbENiCCs4MycM8sI
+7Kx780IXokkLIl5aBWsjKCgKSIBeNNBULrY1tlTaCLVAa4htEakhmtJGjQI9Q+q/
+nj+T8533e773vHO+Dp1nCPYpI0HDDeczg09f7xm3YUt7c3MxIWlwL2EuJgrQ3EdR
+bVbksDtUm4swEzRkWGSigAlwNClIJAMALzIUEGUJ0QCSkGIlSuB4Io7I15x6B8ZI
+ohOtVjVcw5s8FeLq/+gL5g5IQAKFM0kSFEgBSryJZgSZRYgzAagoDJBlxEgKIwEa
+QUgqQIEUPqNYVmBoyMu0oFAcKWKcew6HRRSPBF5UIAOgKIks0nGcyLKQokhSFzqR
+wyYWIax2qHK+6ICFokOTd7kR4Y0jHMijFSA9CKdqxd6dhDmHoJFoIhlWxBegFJJX
+TBREHMsrNBI4VkSyyFOsTAKkiIokUCxFMowMKAoJNEuJJjxXIbZjNh7sUeU5uB7W
+CxNsIbda1oqwNbtDc2myVoir+S6X3awbcu2166rdSMr7rz9PUm0Q/yXc4EEOp6rZ
+CDPAStml6kBAm0iepQFHxhFoj111oDxVVzDYMYmXPgZ5MJKhOZrDMpqUcJ5QoASA
+rUNKwuGyksDJrChKkJEZyNCkLAAgA07mGI4RaAhx0IR+o102jTDT2KZoxUicmU10
+uR04ymu9Fj+DT7AhwN9Xf2eG4KBFL15fdmDY9KLL30XFU0Ef1cd6u35d0p1Rwnhn
+o4eGVtptrgVpRZ2tHeFXPnC7jV5hf3YZe/ZYbWtm65o9Bc/T366e+Yq4aEjczH5i
+XTeyOL49vPPk/PSZ+spUQ/LgoZQQ38e3W9wLX302EbMyYIootTYlDnX4wbtbl34T
+M1Lh+PvBeI3vspOP1oy9mZFzY9yQtCwsLfL3a3fGz/1ztb7/+nGfV/w/HajYZwzp
+3xLx7r205JZN82Yn2uqXOy2+vaPjMOLz/qcW77rHvceMa5/HdsUklZy68N4IW1fS
+XBz3WWN735kjpp9OJYXeG/4+1a9vxW3T8K3aDWOb3irquVkZDZ3WyDbw2pOm3xae
+iLo0sW3+oL3G6Ox2lQW1XAz0DGZ+HLuPnDqh5rnLGxbnvi65D7cdDB4uD6pJly7c
+Ma6IGC1LLn+y/J2+hN1Hnb6JKXctXz7aXtIzdmBsR8+Cqg3Tt4TJEQ85kLzxfLzl
+vmF/dt248cAb/lk3XcPDSyYOt56ND7lyJOP05cxu7sEXpVOTFenVwddzwnPX8pOj
+uXWXqiK7/qpMIJ+K09kvlypTV7OiNkaTFqs7cWtjWnnT6c1VO0K82Ftj9y/bkujj
+2qpvl2alN5zbyXe01w784f7xfNjO++sn2g9WZ3o6qxNSCtdbtNkfZn6ODYyoabT/
++fDDl+IK1YBprj+1/lDo+1mruosfDlX/CzLiwO4=
+=UNXO
+-----END PGP MESSAGE-----
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/richardlarocque
+
+==================================================================

@@ -3,9 +3,12 @@ let
   accessKeyId = "rlarocque-nixops2";
 
   vouchPort = 3334;
-  ghostPorta8l7 = 3335;
 
+  ghostPorta8l7 = 3335;
   a8l7ContentPath = /var/ghost/a8l7;
+
+  ghostPortr6l7 = 3336;
+  r6l7ContentPath = /var/ghost/r6l7;
 in {
   network.description = "NixOS r6l7.com / a8l7.com Web Server";
   network.enableRollback = true;
@@ -66,6 +69,13 @@ in {
           contentPath = a8l7ContentPath;
           environmentFile = /run/keys/ghost-secrets;
         };
+
+        blogs.r6l7 = {
+          url = "https://blog.r6l7.com";
+          port = ghostPortr6l7;
+          contentPath = r6l7ContentPath;
+          environmentFile = /run/keys/ghost-secrets;
+        };
       };
 
       deployment.keys.ghost-secrets = {
@@ -123,9 +133,17 @@ in {
         directories = [ (toString a8l7ContentPath) ];
         keyfile = "/run/keys/tarsnap-ghost-a8l7-secrets";
       };
+      services.tarsnap.archives.ghost-r6l7 = {
+        directories = [ (toString r6l7ContentPath) ];
+        keyfile = "/run/keys/tarsnap-ghost-r6l7-secrets";
+      };
 
       deployment.keys.tarsnap-ghost-a8l7-secrets = {
-        text = builtins.readFile ./secrets/tarsnap-master.key;
+        text = builtins.readFile ./secrets/ghost-a8l7-write.key;
+        permissions = "0440";
+      };
+      deployment.keys.tarsnap-ghost-r6l7-secrets = {
+        text = builtins.readFile ./secrets/ghost-r6l7-write.key;
         permissions = "0440";
       };
 
@@ -135,11 +153,25 @@ in {
         root = pkgs.copyPathToStore ./content/a8l7.com;
       };
 
+      services.nginx.virtualHosts."r6l7.com" = {
+        forceSSL = false;
+        enableACME = false;
+        root = pkgs.copyPathToStore ./content/r6l7.com;
+      };
+
       services.nginx.virtualHosts."vouch.a8l7.com" = {
         forceSSL = true;
         enableACME = true;
         locations."/" = {
           proxyPass = "http://127.0.0.1:${toString vouchPort}";
+        };
+      };
+
+      services.nginx.virtualHosts."blog.r6l7.com" = {
+        forceSSL = true;
+        enableACME = true;
+        locations."/" = {
+          proxyPass = "http://127.0.0.1:${toString ghostPortr6l7}";
         };
       };
 

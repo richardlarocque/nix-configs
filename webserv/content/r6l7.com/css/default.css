@@ -1,0 +1,23 @@
+
+body {
+	background-color: #443333;
+}
+
+h1 {
+	margin: 0.5em 0;
+}
+
+h3 {
+	margin: 0.5em 0;
+}
+
+
+.main {
+	max-width: 30em;
+	margin: auto;
+	border-style: 1px solid;
+	padding: 1em;
+	background-color: #ffeedc;
+}
+
+
