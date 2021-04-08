@@ -11,6 +11,7 @@ let
   r6l7ContentPath = /var/ghost/r6l7;
 
   voxPort = 3337;
+  discerePort = 3338;
 in {
   network.description = "NixOS r6l7.com / a8l7.com Web Server";
   network.enableRollback = true;
@@ -44,14 +45,8 @@ in {
       nixpkgs.config.allowUnfree = true;
 
       imports = [
-        #./common.nix
-        #./site-module.nix
-
-        # SQLite node module broken, apparently.
-        # ./discere-service.nix
-
         ./modules/vox.nix
-
+        ./modules/discere.nix
         ./modules/vouch.nix
         ./modules/ghost-sqlite.nix
       ];
@@ -155,10 +150,22 @@ in {
         package = (import ../../vox/override.nix { inherit pkgs; }).package;
       };
 
+      services.discere = {
+        enable = true;
+        port = discerePort;
+        package = (import ../../discere/override.nix { inherit pkgs; }).package;
+      };
+
       services.nginx.virtualHosts."vox.r6l7.com" = {
         #enableACME = true;
         #forceSSL = true;
-        locations."/".proxyPass = "http://localhost:${voxPort}";
+        locations."/".proxyPass = "http://localhost:${toString voxPort}";
+      };
+
+      services.nginx.virtualHosts."discere.r6l7.com" = {
+        #enableACME = true;
+        #forceSSL = true;
+        locations."/".proxyPass = "http://localhost:${toString discerePort}";
       };
 
       services.nginx.virtualHosts."a8l7.com" = {

@@ -1,7 +1,6 @@
 { lib, pkgs, config, ... }:
 with lib;
 let
-  # vox = import ../../vox/override.nix { inherit pkgs; };
   cfg = config.services.vox;
 in {
   options.services.vox = {
@@ -36,15 +35,6 @@ in {
         PORT = toString cfg.port;
       };
     };
-
-    ### services.nginx = {
-    ###   enable = true;
-    ###   virtualHosts."vox.r6l7.com" = {
-    ###     #enableACME = true;
-    ###     #forceSSL = true;
-    ###     locations."/".proxyPass = "http://localhost:${port}";
-    ###   };
-    ### };
 
     users.users.vox = {
       group = "vox";
