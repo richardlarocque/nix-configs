@@ -157,14 +157,14 @@ in {
       };
 
       services.nginx.virtualHosts."vox.r6l7.com" = {
-        #enableACME = true;
-        #forceSSL = true;
+        enableACME = true;
+        forceSSL = true;
         locations."/".proxyPass = "http://localhost:${toString voxPort}";
       };
 
       services.nginx.virtualHosts."discere.r6l7.com" = {
-        #enableACME = true;
-        #forceSSL = true;
+        enableACME = true;
+        forceSSL = true;
         locations."/".proxyPass = "http://localhost:${toString discerePort}";
       };
 
@@ -175,8 +175,8 @@ in {
       };
 
       services.nginx.virtualHosts."r6l7.com" = {
-        forceSSL = false;
-        enableACME = false;
+        forceSSL = true;
+        enableACME = true;
         root = pkgs.copyPathToStore ./content/r6l7.com;
       };
 
