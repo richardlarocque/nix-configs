@@ -109,6 +109,8 @@ in {
             - larocque.david@gmail.com
             - pat.larocque59@outlook.com
             - larocquep14@gmail.com
+            - matthew.a.daly@gmail.com
+            - crystaltingtse@gmail.com
 
             jwt:
               maxAge: 240
