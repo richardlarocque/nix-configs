@@ -111,6 +111,8 @@ in {
             - larocquep14@gmail.com
             - matthew.a.daly@gmail.com
             - crystaltingtse@gmail.com
+            - john@jzila.com
+            - amanda.s.chung@gmail.com
 
             jwt:
               maxAge: 240
