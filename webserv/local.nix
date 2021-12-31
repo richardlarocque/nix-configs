@@ -1,12 +1,21 @@
 let
   vouchPort = 3334;
   ghostPorta8l7 = 3335;
+  a8l7ContentPath = /var/ghost/a8l7;
+
+  ghostPortr6l7 = 3336;
+  r6l7ContentPath = /var/ghost/r6l7;
+
+  voxPort = 3337;
+  discerePort = 3338;
+
+  pkgs = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-20.09.tar.gz") {};
 in {
   network.description = "NixOS r6l7.com / a8l7.com Web Server";
   network.enableRollback = true;
 
   webserv =
-    { resources, config, pkgs, ... }:
+    { resources, config, ... }:
     {
       deployment.targetEnv = "virtualbox";
       deployment.virtualbox = {
@@ -22,9 +31,6 @@ in {
       nixpkgs.config.allowUnfree = true;
 
       imports = [
-        #./common.nix
-        #./site-module.nix
-
         # SQLite node module broken, apparently.
         # ./discere-service.nix
 
@@ -44,11 +50,16 @@ in {
         blogs.a8l7 = {
           url = "http://blog.a8l7.com"; # FIXME: HTTPS.
           port = ghostPorta8l7;
-          contentPath = /var/ghost/a8l7;
+          contentPath = a8l7ContentPath;
           environmentFile = /run/keys/ghost-secrets;
         };
 
-        # TODO: Tarsnap for blog!
+        ## blogs.r6l7 = {
+        ##   url = "https://blog.r6l7.com";
+        ##   port = ghostPortr6l7;
+        ##   contentPath = r6l7ContentPath;
+        ##   environmentFile = /run/keys/ghost-secrets;
+        ## };
       };
 
       deployment.keys.ghost-secrets = {
@@ -59,7 +70,7 @@ in {
       };
 
       services.vouch-proxy = {
-        enable = true;
+        enable = false;
         package = (import ./pkgs/vouch.nix { inherit pkgs; });
         environmentFile = /run/keys/vouch-secrets;
         extraConfig = ''
@@ -88,12 +99,12 @@ in {
           '';
       };
 
-      deployment.keys.vouch-secrets = {
-        text = builtins.readFile secrets/vouch-a8l7-local-env-vars;
-        user = "vouch";
-        group = "vouch";
-        permissions = "0440";
-      };
+      # deployment.keys.vouch-secrets = {
+      #   text = builtins.readFile secrets/vouch-a8l7-local-env-vars;
+      #   user = "vouch";
+      #   group = "vouch";
+      #   permissions = "0440";
+      # };
 
       services.nginx.enable = true;
       services.nginx.recommendedProxySettings = true;
@@ -108,44 +119,50 @@ in {
       };
 
       services.nginx.virtualHosts."blog.a8l7.com" = {
-        extraConfig = ''
-          auth_request /validate;
-
-          error_page 401 = @error401;
-
-          location @error401 {
-            # redirect to Vouch Proxy for login
-            #return 302 https://vouch.a8l7.com/login?url=$scheme://$http_host$request_uri&vouch-failcount=$auth_resp_failcount&X-Vouch-Token=$auth_resp_jwt&error=$auth_resp_err;
-            # FIXME: HTTPS!
-            return 302 http://vouch.a8l7.com/login?url=$scheme://$http_host$request_uri&vouch-failcount=$auth_resp_failcount&X-Vouch-Token=$auth_resp_jwt&error=$auth_resp_err;
-          }
-        '';
-
-        locations."/validate" = {
-          extraConfig = ''
-            # forward the /validate request to Vouch Proxy
-            proxy_pass http://127.0.0.1:${toString vouchPort}/validate;
-            ## be sure to pass the original host header
-            ## proxy_set_header Host $http_host;
-
-            # nginx thinks http_host could be spoofed and I should not trust it?
-            proxy_set_header Host $host;
-
-            # Vouch Proxy only acts on the request headers
-            proxy_pass_request_body off;
-            proxy_set_header Content-Length "";
-
-            # optionally add X-Vouch-User as returned by Vouch Proxy along with the request
-            auth_request_set $auth_resp_x_vouch_user $upstream_http_x_vouch_user;
-
-            # these return values are used by the @error401 call
-            auth_request_set $auth_resp_jwt $upstream_http_x_vouch_jwt;
-            auth_request_set $auth_resp_err $upstream_http_x_vouch_err;
-            auth_request_set $auth_resp_failcount $upstream_http_x_vouch_failcount;
-          '';
+        locations."/" = {
+          proxyPass = "http://127.0.0.1:${toString ghostPorta8l7}";
         };
-
-        locations."/".proxyPass = "http://127.0.0.1:${toString ghostPorta8l7}";
       };
+
+      ## services.nginx.virtualHosts."blog.a8l7.com" = {
+      ##   extraConfig = ''
+      ##     auth_request /validate;
+
+      ##     error_page 401 = @error401;
+
+      ##     location @error401 {
+      ##       # redirect to Vouch Proxy for login
+      ##       #return 302 https://vouch.a8l7.com/login?url=$scheme://$http_host$request_uri&vouch-failcount=$auth_resp_failcount&X-Vouch-Token=$auth_resp_jwt&error=$auth_resp_err;
+      ##       # FIXME: HTTPS!
+      ##       return 302 http://vouch.a8l7.com/login?url=$scheme://$http_host$request_uri&vouch-failcount=$auth_resp_failcount&X-Vouch-Token=$auth_resp_jwt&error=$auth_resp_err;
+      ##     }
+      ##   '';
+
+      ##   locations."/validate" = {
+      ##     extraConfig = ''
+      ##       # forward the /validate request to Vouch Proxy
+      ##       proxy_pass http://127.0.0.1:${toString vouchPort}/validate;
+      ##       ## be sure to pass the original host header
+      ##       ## proxy_set_header Host $http_host;
+
+      ##       # nginx thinks http_host could be spoofed and I should not trust it?
+      ##       proxy_set_header Host $host;
+
+      ##       # Vouch Proxy only acts on the request headers
+      ##       proxy_pass_request_body off;
+      ##       proxy_set_header Content-Length "";
+
+      ##       # optionally add X-Vouch-User as returned by Vouch Proxy along with the request
+      ##       auth_request_set $auth_resp_x_vouch_user $upstream_http_x_vouch_user;
+
+      ##       # these return values are used by the @error401 call
+      ##       auth_request_set $auth_resp_jwt $upstream_http_x_vouch_jwt;
+      ##       auth_request_set $auth_resp_err $upstream_http_x_vouch_err;
+      ##       auth_request_set $auth_resp_failcount $upstream_http_x_vouch_failcount;
+      ##     '';
+      ##   };
+
+      ##   locations."/".proxyPass = "http://127.0.0.1:${toString ghostPorta8l7}";
+      ## };
     };
 }
