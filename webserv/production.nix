@@ -12,6 +12,8 @@ let
 
   voxPort = 3337;
   discerePort = 3338;
+
+  pkgs = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-20.09.tar.gz") {};
 in {
   network.description = "NixOS r6l7.com / a8l7.com Web Server";
   network.enableRollback = true;
@@ -21,8 +23,9 @@ in {
     elasticIPs.webserv-ip = { inherit region accessKeyId; };
   };
 
+
   webserv =
-    { resources, config, pkgs, ... }:
+    { resources, config, ... }:
     {
       deployment.targetEnv = "ec2";
       deployment.ec2 = {
@@ -111,6 +114,7 @@ in {
             - larocquep14@gmail.com
             - matthew.a.daly@gmail.com
             - crystaltingtse@gmail.com
+            - yeamansrock@sympatico.ca
 
             jwt:
               maxAge: 240
