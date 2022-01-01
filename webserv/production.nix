@@ -6,14 +6,17 @@ let
 
   ghostPorta8l7 = 3335;
   a8l7ContentPath = /var/ghost/a8l7;
+  a8l7RunPath = /var/ghost/a8l7-run;
 
   ghostPortr6l7 = 3336;
   r6l7ContentPath = /var/ghost/r6l7;
+  r6l7RunPath = /var/ghost/r6l7-run;
 
   voxPort = 3337;
   discerePort = 3338;
 
-  pkgs = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-20.09.tar.gz") {};
+  #pkgs = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-20.09.tar.gz") {};
+  pkgs = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-21.11.tar.gz") {};
 in {
   network.description = "NixOS r6l7.com / a8l7.com Web Server";
   network.enableRollback = true;
@@ -22,7 +25,6 @@ in {
     ec2KeyPairs.my-key-pair = { inherit region accessKeyId; };
     elasticIPs.webserv-ip = { inherit region accessKeyId; };
   };
-
 
   webserv =
     { resources, config, ... }:
@@ -51,7 +53,7 @@ in {
         ./modules/vox.nix
         ./modules/discere.nix
         ./modules/vouch.nix
-        ./modules/ghost-sqlite.nix
+        ./modules/ghost4-sqlite.nix
       ];
 
       networking.firewall.enable = true;
@@ -62,11 +64,12 @@ in {
 
       services.ghost-sqlite = {
         enable = true;
-        package = (import ../../ghost/override.nix { inherit pkgs; }).package;
+        package = (import ../../ghost4/override.nix { inherit pkgs; }).package;
         blogs.a8l7 = {
           url = "https://blog.a8l7.com";
           port = ghostPorta8l7;
           contentPath = a8l7ContentPath;
+          runPath = a8l7RunPath;
           environmentFile = /run/keys/ghost-secrets;
         };
 
@@ -74,6 +77,7 @@ in {
           url = "https://blog.r6l7.com";
           port = ghostPortr6l7;
           contentPath = r6l7ContentPath;
+          runPath = r6l7RunPath;
           environmentFile = /run/keys/ghost-secrets;
         };
       };
