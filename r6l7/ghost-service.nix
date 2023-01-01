@@ -111,6 +111,10 @@ in {
   };
   users.extraGroups.ghost.name = "ghost";
 
+  # Warning: See docs on tarsnap here:
+  # https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/backup/tarsnap.nix
+  # Current configs seem pretty broken.  Should be using separate keys,
+  # separate cache dirs, etc.  Definitely hit a `--fsck` problem recently.
   services.tarsnap.archives.ghost = {
     directories = [ contentPath ];
   };
