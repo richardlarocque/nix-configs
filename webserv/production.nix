@@ -12,11 +12,7 @@ let
   r6l7ContentPath = /var/ghost/r6l7;
   r6l7RunPath = /var/ghost/r6l7-run;
 
-  voxPort = 3337;
-  discerePort = 3338;
-
-  #pkgs = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-20.09.tar.gz") {};
-  pkgs = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-21.11.tar.gz") {};
+  pkgs = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-22.11.tar.gz") {};
 in {
   network.description = "NixOS r6l7.com / a8l7.com Web Server";
   network.enableRollback = true;
@@ -50,8 +46,6 @@ in {
       nixpkgs.config.allowUnfree = true;
 
       imports = [
-        ./modules/vox.nix
-        ./modules/discere.nix
         ./modules/vouch.nix
         ./modules/ghost4-sqlite.nix
       ];
@@ -60,7 +54,7 @@ in {
       networking.firewall.allowedTCPPorts = [ 22 80 443 ];
       time.timeZone = "America/Los_Angeles";
       security.acme.acceptTerms = true;
-      security.acme.email = "richard@r6l7.com";
+      security.acme.defaults.email = "richard@r6l7.com";
 
       services.ghost-sqlite = {
         enable = true;
@@ -160,30 +154,6 @@ in {
       deployment.keys.tarsnap-ghost-r6l7-secrets = {
         text = builtins.readFile ./secrets/ghost-r6l7-write.key;
         permissions = "0440";
-      };
-
-      services.vox = {
-        enable = true;
-        port = voxPort;
-        package = (import ../../vox/override.nix { inherit pkgs; }).package;
-      };
-
-      services.discere = {
-        enable = true;
-        port = discerePort;
-        package = (import ../../discere/override.nix { inherit pkgs; }).package;
-      };
-
-      services.nginx.virtualHosts."vox.r6l7.com" = {
-        enableACME = true;
-        forceSSL = true;
-        locations."/".proxyPass = "http://localhost:${toString voxPort}";
-      };
-
-      services.nginx.virtualHosts."discere.r6l7.com" = {
-        enableACME = true;
-        forceSSL = true;
-        locations."/".proxyPass = "http://localhost:${toString discerePort}";
       };
 
       services.nginx.virtualHosts."a8l7.com" = {
