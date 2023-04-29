@@ -76,6 +76,11 @@ in {
         };
       };
 
+      # mail__transport=SMTP
+      # mail__options__service=Mailgun
+      # mail__options__port=587
+      # mail__options__auth__user=postmaster@blog.a8l7.com
+      # mail__options__auth__pass=XXXXX
       deployment.keys.ghost-secrets = {
         text = builtins.readFile ./secrets/ghost-env-vars;
         user = "ghost";
@@ -119,6 +124,11 @@ in {
           '';
       };
 
+      # OAUTH_PROVIDER=google
+      # OAUTH_CLIENT_ID=560989215663-pj4qcfs54opl97ab89ggf2gvibogrqp7.apps.googleusercontent.com
+      # OAUTH_CLIENT_SECRET=XXXXX
+      # OAUTH_CALLBACK_URLS=https://vouch.a8l7.com/auth
+      # VOUCH_JWT_SECRET=XXXXX
       deployment.keys.vouch-secrets = {
         text = builtins.readFile secrets/vouch-a8l7-env-vars;
         user = "vouch";
@@ -147,12 +157,18 @@ in {
         keyfile = "/run/keys/tarsnap-ghost-r6l7-secrets";
       };
 
+      # tarsnap-keygen --machine nixsrv --keyfile blog-a8l7-master.key --user richard.larocque@gmail.com
+      # tarsnap-keymgmt --outkeyfile blog-a8l7-rw.key -rw blog-a8l7-master.key
+      # tarsnap-keymgmt --outkeyfile blog-a8l7-wo.key -w blog-a8l7-master.key
+      # tarsnap-keygen --machine nixsrv --keyfile blog-r6l7-master.key --user richard.larocque@gmail.com
+      # tarsnap-keymgmt --outkeyfile blog-r6l7-rw.key -rw blog-r6l7-master.key
+      # tarsnap-keymgmt --outkeyfile blog-r6l7-wo.key -w blog-r6l7-master.key
       deployment.keys.tarsnap-ghost-a8l7-secrets = {
-        text = builtins.readFile ./secrets/ghost-a8l7-write.key;
+        text = builtins.readFile ./secrets/blog-a8l7-rw.key;
         permissions = "0440";
       };
       deployment.keys.tarsnap-ghost-r6l7-secrets = {
-        text = builtins.readFile ./secrets/ghost-r6l7-write.key;
+        text = builtins.readFile ./secrets/blog-r6l7-rw.key;
         permissions = "0440";
       };
 
