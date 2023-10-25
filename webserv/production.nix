@@ -30,7 +30,7 @@ in {
         accessKeyId = accessKeyId;
         region = region;
         ebsBoot = true;
-        instanceType = "m1.small";
+        instanceType = "t3.small";
         keyPair = resources.ec2KeyPairs.my-key-pair;
         securityGroups = [ "default" "allow-http" ];
         ami = "ami-081d3bb5fbee0a1ac";
