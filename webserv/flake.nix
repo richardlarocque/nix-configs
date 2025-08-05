@@ -3,9 +3,10 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    sops-nix.url = "github:Mic92/sops-nix";
   };
 
-  outputs = { self, nixpkgs }:
+  outputs = { self, nixpkgs, sops-nix }:
     let
       vouchPort = 3334;
       ghostPorta8l7 = 3335;
@@ -22,12 +23,17 @@
     nixosConfigurations.myserver = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
+        sops-nix.nixosModules.sops
+
         # Your configuration inline
         ({ config, pkgs, ... }: {
           virtualisation.vmVariant = {
             virtualisation.memorySize = 2048;
             virtualisation.cores = 2;
           };
+
+          sops.defaultSopsFile = ./secrets/secrets.yaml;
+          sops.age.keyFile = "/var/lib/sops-nix/key.txt";
 
           networking.hostName = "rickserve";
           networking.hostId = "db56ba41";
@@ -49,6 +55,22 @@
           networking.firewall.allowedTCPPorts = [ 22 80 443 ];
           time.timeZone = "America/Los_Angeles";
 
+          sops.secrets."ghost_env/mail__transport" = {};
+          sops.secrets."ghost_env/mail__options__service" = {};
+          sops.secrets."ghost_env/mail__options__port" = {};
+          sops.secrets."ghost_env/mail__options__auth_user" = {};
+          sops.secrets."ghost_env/mail__options__auth_pass" = {};
+
+          sops.templates."/run/keys/ghost-secrets" = {
+            content = ''
+              mail__transport=${config.sops.placeholder."ghost_env/mail__transport"}
+              mail__options__service=${config.sops.placeholder."ghost_env/mail__options__service"}
+              mail__options__port=${config.sops.placeholder."ghost_env/mail__options__port"}
+              mail__options__auth_user=${config.sops.placeholder."ghost_env/mail__options__auth__user"}
+              mail__options__auth_pass=${config.sops.placeholder."ghost_env/mail__options__auth__pass"}
+            '';
+          };
+
           services.ghost-sqlite = {
             enable = true;
             package = (import ../../ghost4/override.nix { inherit pkgs; }).package;
@@ -69,12 +91,13 @@
             ## };
           };
 
-          deployment.keys.ghost-secrets = {
-            text = builtins.readFile ./secrets/ghost-env-vars;
-            user = "ghost";
-            group = "ghost";
-            permissions = "0440";
-          };
+          ## sops does this now.  Delete me.
+          ## deployment.keys.ghost-secrets = {
+          ##   text = builtins.readFile ./secrets/ghost-env-vars;
+          ##   user = "ghost";
+          ##   group = "ghost";
+          ##   permissions = "0440";
+          ## };
 
           services.vouch-proxy = {
             enable = false;

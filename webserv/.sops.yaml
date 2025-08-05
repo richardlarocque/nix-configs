@@ -1,0 +1,7 @@
+keys:
+  - &server age15lgxvl5zdje2hef0d0ltnsr7hmkzlnzquvgrug52vwmfqev9a9rqv7jauk
+creation_rules:
+  - path_regex: secrets/.*\.yaml$
+    key_groups:
+    - age:
+      - *server
