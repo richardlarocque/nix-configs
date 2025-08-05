@@ -4,10 +4,10 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     sops-nix.url = "github:Mic92/sops-nix";
-    ghost4 = "git+file://home/rlarocque/src/ghost4";
+    ghost4.url = "git+file:../../ghost4";
   };
 
-  outputs = { self, nixpkgs, sops-nix }:
+  outputs = { self, nixpkgs, sops-nix, ghost4 }:
     let
       vouchPort = 3334;
       ghostPorta8l7 = 3335;
@@ -39,6 +39,9 @@
           networking.hostName = "rickserve";
           networking.hostId = "db56ba41";
 
+          # Needed for VM debugging.
+          services.openssh.enable = true;
+
           # Permit Tarsnap.
           nixpkgs.config.allowUnfree = true;
 
@@ -59,22 +62,22 @@
           sops.secrets."ghost_env/mail__transport" = {};
           sops.secrets."ghost_env/mail__options__service" = {};
           sops.secrets."ghost_env/mail__options__port" = {};
-          sops.secrets."ghost_env/mail__options__auth_user" = {};
-          sops.secrets."ghost_env/mail__options__auth_pass" = {};
+          sops.secrets."ghost_env/mail__options__auth__user" = {};
+          sops.secrets."ghost_env/mail__options__auth__pass" = {};
 
           sops.templates."/run/keys/ghost-secrets" = {
             content = ''
               mail__transport=${config.sops.placeholder."ghost_env/mail__transport"}
               mail__options__service=${config.sops.placeholder."ghost_env/mail__options__service"}
               mail__options__port=${config.sops.placeholder."ghost_env/mail__options__port"}
-              mail__options__auth_user=${config.sops.placeholder."ghost_env/mail__options__auth__user"}
-              mail__options__auth_pass=${config.sops.placeholder."ghost_env/mail__options__auth__pass"}
+              mail__options__auth__user=${config.sops.placeholder."ghost_env/mail__options__auth__user"}
+              mail__options__auth__pass=${config.sops.placeholder."ghost_env/mail__options__auth__pass"}
             '';
           };
 
           services.ghost-sqlite = {
             enable = true;
-            package = (import ../../ghost4/override.nix { inherit pkgs; }).package;
+            package = ghost4;
             blogs.a8l7 = {
               url = "http://blog.a8l7.com"; # FIXME: HTTPS.
               port = ghostPorta8l7;

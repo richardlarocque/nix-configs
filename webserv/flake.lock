@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "ghost4": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1672715060,
+        "narHash": "sha256-TRE/FTRNNFluUAx8kuf7PGeR7FYHSn6aMMpi5+zPCug=",
+        "ref": "refs/heads/master",
+        "rev": "6315e288d6bf3ef3f8f71cc885b1d7730c39ceb8",
+        "revCount": 6,
+        "type": "git",
+        "url": "file:../../ghost4"
+      },
+      "original": {
+        "type": "git",
+        "url": "file:../../ghost4"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1754292888,
@@ -34,6 +50,7 @@
     },
     "root": {
       "inputs": {
+        "ghost4": "ghost4",
         "nixpkgs": "nixpkgs",
         "sops-nix": "sops-nix"
       }

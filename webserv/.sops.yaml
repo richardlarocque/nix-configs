@@ -1,7 +1,9 @@
 keys:
   - &server age15lgxvl5zdje2hef0d0ltnsr7hmkzlnzquvgrug52vwmfqev9a9rqv7jauk
+  - &admin age1n5xurkd2g2sje2c2rpgvh9f0jeqdrlke0uaxqcvy8zx7zkycxyjs7t6naw
 creation_rules:
   - path_regex: secrets/.*\.yaml$
     key_groups:
     - age:
       - *server
+      - *admin
