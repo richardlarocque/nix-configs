@@ -4,6 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     sops-nix.url = "github:Mic92/sops-nix";
+    ghost4 = "git+file://home/rlarocque/src/ghost4";
   };
 
   outputs = { self, nixpkgs, sops-nix }:
