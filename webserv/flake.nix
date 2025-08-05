@@ -1,23 +1,24 @@
-let
-  vouchPort = 3334;
-  ghostPorta8l7 = 3335;
-  a8l7ContentPath = /var/ghost/a8l7;
-  a8l7RunPath = /var/ghost/a8l7-run;
-
-  ghostPortr6l7 = 3336;
-  r6l7ContentPath = /var/ghost/r6l7;
-  r6l7RunPath = /var/ghost/r6l7-run;
-
-  voxPort = 3337;
-  discerePort = 3338;
-in {
+{
   description = "Server configuration test";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
   };
 
-  outputs = { self, nixpkgs }: {
+  outputs = { self, nixpkgs }:
+    let
+      vouchPort = 3334;
+      ghostPorta8l7 = 3335;
+      a8l7ContentPath = /var/ghost/a8l7;
+      a8l7RunPath = /var/ghost/a8l7-run;
+
+      ghostPortr6l7 = 3336;
+      r6l7ContentPath = /var/ghost/r6l7;
+      r6l7RunPath = /var/ghost/r6l7-run;
+
+      voxPort = 3337;
+      discerePort = 3338;
+    in {
     nixosConfigurations.myserver = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
