@@ -31,10 +31,30 @@
           virtualisation.vmVariant = {
             virtualisation.memorySize = 2048;
             virtualisation.cores = 2;
+            virtualisation.forwardPorts = [
+              { from = "host"; host.port = 2222; guest.port = 22; }
+            ];
           };
 
+          # TEMPORARY FIXME.
+          users.users.luser = {
+            isNormalUser = true;
+            password = "foo";
+            group = "luser";
+            extraGroups = ["wheel"];
+            openssh.authorizedKeys.keys = [
+              "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCruBm/Zh6pe9/Lr+Mo6KvIyDFJodIUunC8eCPfkvix1g3aWobtRnRInXMG0PS0WphfJJikhGrLCe0QaJyjQ8r0qg8Y2clINA0IF0pMX/C3dBPtYF8y45d1uXA6H920V0x//Glz1gawhwOdGOsrDO8WSUg8WdQUoU12hM0CxwQflErqTw3qanyIoF6Ucf0x5quSgY4RPjWHe+0GTBrB4n11f5bVjfu96ac95YiTccLHRmMDZClUHVS3cpZgcl5/U5glvUCdSFKuIzQXoxuAggUnk3DnhyWFyRR/y1GYmNnMmHRDxNUllmIMWVuzdQxUpZCGCOC4mA5uAaBQXFHruCw/"
+            ];
+          };
+          users.groups.luser = {};
+
+          system.stateVersion = "25.05";
+
+          # You'll need to manually provision the private key into the keyFile
+          # location on the target machine.
           sops.defaultSopsFile = ./secrets/secrets.yaml;
           sops.age.keyFile = "/var/lib/sops-nix/key.txt";
+          sops.age.generateKey = false;
 
           networking.hostName = "rickserve";
           networking.hostId = "db56ba41";
