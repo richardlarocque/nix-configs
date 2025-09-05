@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     sops-nix.url = "github:Mic92/sops-nix";
-    ghost4.url = "git+file:../../ghost4";
+    ghost4.url = "git+file:../../ghost4?rev=0a8f747d501b27d956f42450a254ee64b2a68040";
   };
 
   outputs = { self, nixpkgs, sops-nix, ghost4 }:
@@ -20,9 +20,13 @@
 
       voxPort = 3337;
       discerePort = 3338;
-    in {
-    nixosConfigurations.myserver = nixpkgs.lib.nixosSystem {
+
       system = "x86_64-linux";
+      #warnings = [ (builtins.toJSON (builtins.attrNames ghost4)) ];
+    in {
+
+    nixosConfigurations.myserver = nixpkgs.lib.nixosSystem {
+      system = system;
       modules = [
         sops-nix.nixosModules.sops
 
@@ -103,7 +107,7 @@
 
           services.ghost-sqlite = {
             enable = true;
-            package = ghost4;
+            package = ghost4.packages.${system}.default;
             blogs.a8l7 = {
               url = "http://blog.a8l7.com"; # FIXME: HTTPS.
               port = ghostPorta8l7;
@@ -121,18 +125,33 @@
             ## };
           };
 
-          ## sops does this now.  Delete me.
-          ## deployment.keys.ghost-secrets = {
-          ##   text = builtins.readFile ./secrets/ghost-env-vars;
-          ##   user = "ghost";
-          ##   group = "ghost";
-          ##   permissions = "0440";
-          ## };
+          sops.secrets."vouch_a8l7_env/OAUTH_PROVIDER" = {};
+          sops.secrets."vouch_a8l7_env/OAUTH_CLIENT_ID" = {};
+          sops.secrets."vouch_a8l7_env/OAUTH_CLIENT_SECRET" = {};
+          sops.secrets."vouch_a8l7_env/OAUTH_CALLBACK_URLS" = {};
+          sops.secrets."vouch_a8l7_env/VOUCH_JWT_SECRET" = {};
+
+          sops.secrets."vouch_a8l7_local_env/OAUTH_PROVIDER" = {};
+          sops.secrets."vouch_a8l7_local_env/OAUTH_CLIENT_ID" = {};
+          sops.secrets."vouch_a8l7_local_env/OAUTH_CLIENT_SECRET" = {};
+          sops.secrets."vouch_a8l7_local_env/OAUTH_CALLBACK_URLS" = {};
+          sops.secrets."vouch_a8l7_local_env/VOUCH_JWT_SECRET" = {};
+
+          # TODO: Move off local secrets.
+          sops.templates."vouch-a8l7-secrets" = {
+            content = ''
+              OAUTH_PROVIDER=${config.sops.placeholder."vouch_a8l7_local_env/OAUTH_PROVIDER"}
+              OAUTH_CLIENT_ID=${config.sops.placeholder."vouch_a8l7_local_env/OAUTH_CLIENT_ID"}
+              OAUTH_CLIENT_SECRET=${config.sops.placeholder."vouch_a8l7_local_env/OAUTH_CLIENT_SECRET"}
+              OAUTH_CALLBACK_URLS=${config.sops.placeholder."vouch_a8l7_local_env/OAUTH_CALLBACK_URLS"}
+              VOUCH_JWT_SECRET=${config.sops.placeholder."vouch_a8l7_local_env/VOUCH_JWT_SECRET"}
+            '';
+          };
 
           services.vouch-proxy = {
-            enable = false;
-            package = (import ./pkgs/vouch.nix { inherit pkgs; });
-            environmentFile = /run/keys/vouch-secrets;
+            enable = true;
+            package = pkgs.vouch-proxy;
+            environmentFile = /run/secrets/rendered/vouch-a8l7-secrets;
             extraConfig = ''
           vouch:
             domains:
@@ -158,13 +177,6 @@
               maxAge: 240
           '';
           };
-
-          # deployment.keys.vouch-secrets = {
-          #   text = builtins.readFile secrets/vouch-a8l7-local-env-vars;
-          #   user = "vouch";
-          #   group = "vouch";
-          #   permissions = "0440";
-          # };
 
           services.nginx.enable = true;
           services.nginx.recommendedProxySettings = true;

@@ -174,7 +174,7 @@ in {
     systemd.services = mapAttrs' (instanceName: instanceConfig: nameValuePair "ghost-sqlite-${instanceName}" {
       restartIfChanged = true;
       wantedBy = [ "multi-user.target" ];
-      script = "${pkgs.nodejs}/bin/node ${cfg.package}/index.js";
+      script = "${pkgs.nodejs}/bin/node ${cfg.package}/lib/node_modules/ghost/index.js";
       serviceConfig = {
         Restart = "on-failure";
         PermissionsStartOnly = "true";
