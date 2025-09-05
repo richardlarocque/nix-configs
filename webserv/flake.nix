@@ -161,8 +161,11 @@
           services.nginx.enable = true;
           services.nginx.recommendedProxySettings = true;
 
-          # FIXME: Turn this back on!
-          services.tarsnap.enable = false;
+          services.nginx.virtualHosts."r6l7.com" = {
+            forceSSL = true;
+            enableACME = true;
+            root = pkgs.copyPathToStore ./content/r6l7.com;
+          };
 
           services.nginx.virtualHosts."vouch.a8l7.com" = {
             enableACME = true;
@@ -271,6 +274,19 @@
 
           # This handles the filesystem and boot config for EC2
           ec2.hvm = true;
+
+          sops.secrets."tarsnap/blog_a8l7_rw" = {};
+          sops.secrets."tarsnap/blog_r6l7_rw" = {};
+
+          services.tarsnap.enable = true;
+          services.tarsnap.archives.ghost-a8l7 = {
+            directories = [ (toString a8l7ContentPath) ];
+            keyfile = "/run/secrets/tarsnap/blog_a8l7_rw";
+          };
+          services.tarsnap.archives.ghost-r6l7 = {
+            directories = [ (toString r6l7ContentPath) ];
+            keyfile = "/run/secrets/tarsnap/blog_r6l7_rw";
+          };
         }
       ];
     };
