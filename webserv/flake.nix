@@ -36,6 +36,8 @@
             ];
           };
 
+          nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
           # TEMPORARY FIXME.
           users.users.luser = {
             isNormalUser = true;
@@ -52,6 +54,10 @@
 
           # You'll need to manually provision the private key into the keyFile
           # location on the target machine.
+          #
+          # sudo mkdir /var/lib/sops-nix
+          # sudo mv sops-nixsrv-private-key.txt /var/lib/sops-nix/key.txt
+          #
           sops.defaultSopsFile = ./secrets/secrets.yaml;
           sops.age.keyFile = "/var/lib/sops-nix/key.txt";
           sops.age.generateKey = false;
@@ -85,7 +91,7 @@
           sops.secrets."ghost_env/mail__options__auth__user" = {};
           sops.secrets."ghost_env/mail__options__auth__pass" = {};
 
-          sops.templates."/run/keys/ghost-secrets" = {
+          sops.templates."ghost-secrets" = {
             content = ''
               mail__transport=${config.sops.placeholder."ghost_env/mail__transport"}
               mail__options__service=${config.sops.placeholder."ghost_env/mail__options__service"}
@@ -103,7 +109,7 @@
               port = ghostPorta8l7;
               contentPath = a8l7ContentPath;
               runPath = a8l7RunPath;
-              environmentFile = /run/keys/ghost-secrets;
+              environmentFile = /run/secrets/rendered/ghost-secrets;
             };
 
             ## blogs.r6l7 = {
