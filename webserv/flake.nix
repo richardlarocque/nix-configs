@@ -2,7 +2,7 @@
   description = "Server configuration test";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     sops-nix.url = "github:Mic92/sops-nix";
     ghost4.url = "git+file:../../ghost4?rev=0a8f747d501b27d956f42450a254ee64b2a68040";
   };
