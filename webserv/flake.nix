@@ -147,6 +147,13 @@
 
             whiteList:
             - richard.larocque@gmail.com
+            - nxlin903@gmail.com
+            - larocque.david@gmail.com
+            - pat.larocque59@outlook.com
+            - larocquep14@gmail.com
+            - matthew.a.daly@gmail.com
+            - crystaltingtse@gmail.com
+            - yeamansrock@sympatico.ca
 
             jwt:
               maxAge: 240
@@ -160,6 +167,12 @@
 
           services.nginx.enable = true;
           services.nginx.recommendedProxySettings = true;
+
+          services.nginx.virtualHosts."a8l7.com" = {
+            forceSSL = true;
+            enableACME = true;
+            root = pkgs.copyPathToStore ./content/a8l7.com;
+          };
 
           services.nginx.virtualHosts."r6l7.com" = {
             forceSSL = true;
