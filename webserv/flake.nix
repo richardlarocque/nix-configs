@@ -178,6 +178,12 @@
             forceSSL = true;
             enableACME = true;
             root = pkgs.copyPathToStore ./content/r6l7.com;
+
+            locations."/resume.pdf" = {
+              extraConfig = ''
+                add_header Content-Disposition 'inline; filename="RichardLarocque_Resume_SWE.pdf"';
+              '';
+            };
           };
 
           services.nginx.virtualHosts."vouch.a8l7.com" = {
