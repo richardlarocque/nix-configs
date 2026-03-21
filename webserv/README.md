@@ -36,14 +36,14 @@ EC2 console aeons ago.  It's still in your `$HOME/.ssh`.  Probably.
 
 Here's the command that works today:
 ```
-ssh -i ~/.ssh/rhel_west.pem root@44.250.173.128
+ssh -i ~/.ssh/rhel_west.pem root@54.149.201.53
 ```
 
 This may change if we do/don't have a permanent public IP attached.
 
 You can nixos-rebuild onto the target machine with:
 ```
-NIX_SSHOPTS="-i $HOME/.ssh/rhel_west.pem" nixos-rebuild switch --target-host root@44.250.173.128 --flake .#production
+NIX_SSHOPTS="-i $HOME/.ssh/rhel_west.pem" nixos-rebuild switch --target-host root@54.149.201.53 --flake .#production
 ```
 ## Backups
 
