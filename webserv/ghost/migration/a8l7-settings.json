@@ -1,0 +1,5 @@
+{"settings": [
+  {"key": "social_web", "value": false},
+  {"key": "explore_ping", "value": false},
+  {"key": "members_signup_access", "value": "invite"}
+]}

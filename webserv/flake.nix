@@ -21,6 +21,19 @@
       voxPort = 3337;
       discerePort = 3338;
 
+      # Ghost 6, running in containers.  Separate ports and content paths so it
+      # can run alongside Ghost 4 during the migration.
+      ghost6Porta8l7 = 3345;
+      ghost6Portr6l7 = 3346;
+      ghost6Image = "docker.io/library/ghost:6.69.0@sha256:55131b90d48c3cecae6c085f873b2067542ababd286b12d08474b2b34328e266";
+      a8l7Ghost6ContentPath = "/var/ghost6/a8l7";
+      r6l7Ghost6ContentPath = "/var/ghost6/r6l7";
+
+      # Which Ghost nginx sends the blogs to.  Flip to switch over, or back.
+      useGhost6 = false;
+      blogPorta8l7 = if useGhost6 then ghost6Porta8l7 else ghostPorta8l7;
+      blogPortr6l7 = if useGhost6 then ghost6Portr6l7 else ghostPortr6l7;
+
       system = "x86_64-linux";
 
       commonModules = [
@@ -58,6 +71,7 @@
 
             ./modules/vouch.nix
             ./modules/ghost4-sqlite.nix
+            ./modules/ghost-docker.nix
           ];
 
           networking.firewall.enable = true;
@@ -75,6 +89,9 @@
               mail__transport=${config.sops.placeholder."ghost_env/mail__transport"}
               mail__options__service=${config.sops.placeholder."ghost_env/mail__options__service"}
               mail__options__port=${config.sops.placeholder."ghost_env/mail__options__port"}
+              # Port 587 is STARTTLS.  Nodemailer's Mailgun preset assumes 465
+              # with implicit TLS, which newer versions enforce.
+              mail__options__secure=false
               mail__options__auth__user=${config.sops.placeholder."ghost_env/mail__options__auth__user"}
               mail__options__auth__pass=${config.sops.placeholder."ghost_env/mail__options__auth__pass"}
             '';
@@ -97,6 +114,29 @@
               contentPath = r6l7ContentPath;
               runPath = r6l7RunPath;
               environmentFile = /run/secrets/rendered/ghost-secrets;
+            };
+          };
+
+          services.ghost-docker = {
+            enable = true;
+            image = ghost6Image;
+            # Ghost 6 emails a code for logins from new devices, which would block
+            # the import script.  Only turned off while nginx is not sending any
+            # traffic to Ghost 6; it binds to 127.0.0.1.
+            extraEnvironment = nixpkgs.lib.optionalAttrs (!useGhost6) {
+              security__staffDeviceVerification = "false";
+            };
+            blogs.a8l7 = {
+              url = "https://blog.a8l7.com";
+              port = ghost6Porta8l7;
+              contentPath = a8l7Ghost6ContentPath;
+              environmentFile = "/run/secrets/rendered/ghost-secrets";
+            };
+            blogs.r6l7 = {
+              url = "https://blog.r6l7.com";
+              port = ghost6Portr6l7;
+              contentPath = r6l7Ghost6ContentPath;
+              environmentFile = "/run/secrets/rendered/ghost-secrets";
             };
           };
 
@@ -200,7 +240,7 @@
             forceSSL = true;
 
             locations."/" = {
-              proxyPass = "http://127.0.0.1:${toString ghostPortr6l7}";
+              proxyPass = "http://127.0.0.1:${toString blogPortr6l7}";
             };
           };
 
@@ -245,7 +285,7 @@
               '';
             };
 
-            locations."/".proxyPass = "http://127.0.0.1:${toString ghostPorta8l7}";
+            locations."/".proxyPass = "http://127.0.0.1:${toString blogPorta8l7}";
           };
         })
       ];
@@ -258,10 +298,13 @@
         # VM specific
 
         ({ config, pkgs, ... }: {
+          # Otherwise every scripted login emails a code to the real inbox.
+          services.ghost-docker.extraEnvironment.security__staffDeviceVerification = "false";
+
           virtualisation.vmVariant = {
-            virtualisation.memorySize = 2048;
+            virtualisation.memorySize = 4096;
             virtualisation.cores = 2;
-            virtualisation.diskSize = 5120;
+            virtualisation.diskSize = 20480;
             virtualisation.forwardPorts = [
               { from = "host"; host.port = 2222; guest.port = 22; }
             ];
@@ -286,7 +329,7 @@
     nixosConfigurations.production = nixpkgs.lib.nixosSystem {
       system = system;
       modules = commonModules ++ [
-        {
+        ({ config, ... }: {
           imports = [
             "${nixpkgs}/nixos/modules/virtualisation/amazon-image.nix"
           ];
@@ -306,7 +349,23 @@
             directories = [ (toString r6l7ContentPath) ];
             keyfile = "/run/secrets/tarsnap/blog_r6l7_rw";
           };
-        }
+
+          # Ghost 6 keeps posts in MySQL, so back up a dump alongside the
+          # content directory.  Dump before tarsnap's 01:15 run.
+          services.mysqlBackup = {
+            enable = true;
+            databases = [ "ghost_a8l7" "ghost_r6l7" ];
+            calendar = "00:45:00";
+          };
+          services.tarsnap.archives.ghost6-a8l7 = {
+            directories = [ a8l7Ghost6ContentPath "${config.services.mysqlBackup.location}/ghost_a8l7.gz" ];
+            keyfile = "/run/secrets/tarsnap/blog_a8l7_rw";
+          };
+          services.tarsnap.archives.ghost6-r6l7 = {
+            directories = [ r6l7Ghost6ContentPath "${config.services.mysqlBackup.location}/ghost_r6l7.gz" ];
+            keyfile = "/run/secrets/tarsnap/blog_r6l7_rw";
+          };
+        })
       ];
     };
   };
