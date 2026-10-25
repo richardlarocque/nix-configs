@@ -11,6 +11,8 @@
 set -euo pipefail
 blog=$1 port=$2 host=$3 name=$4 themedir=$5 export=$6 settings=$7
 pw=${GHOST_PW:?set GHOST_PW}
+# The password as a JSON string, so quotes and backslashes in it survive.
+pwj=${pw//\\/\\\\}; pwj="\"${pwj//\"/\\\"}\""
 theme=$(basename "$themedir")
 old=/var/ghost/$blog new=/var/ghost6/$blog
 api="http://127.0.0.1:$port/ghost/api/admin"
@@ -29,11 +31,20 @@ wait_ready() {
 cookie=""
 c() { curl -sS ${cookie:+-H "Cookie: $cookie"} -H "Host: $host" -H "X-Forwarded-Proto: https" -H "Origin: https://$host" "$@"; }
 login() {
-  cookie=$(curl -sS -D - -o /dev/null -H "Host: $host" -H "X-Forwarded-Proto: https" -H "Origin: https://$host" \
+  local headers body
+  headers=$(mktemp) body=$(mktemp)
+  curl -sS -D "$headers" -o "$body" -H "Host: $host" -H "X-Forwarded-Proto: https" -H "Origin: https://$host" \
     -H "Content-Type: application/json" -X POST "$api/session/" \
-    -d "{\"username\":\"richard@r6l7.com\",\"password\":\"$pw\"}" \
-    | sed -n 's/^[Ss]et-[Cc]ookie: \([^;]*\).*/\1/p' | paste -sd ';' -)
-  if [ -n "$cookie" ]; then echo "login: ok"; else echo "login: FAILED"; exit 1; fi
+    -d "{\"username\":\"richard@r6l7.com\",\"password\":$pwj}"
+  cookie=$(sed -n 's/^[Ss]et-[Cc]ookie: \([^;]*\).*/\1/p' "$headers" | paste -sd ';' -)
+  if [ -n "$cookie" ]; then
+    echo "login: ok"
+    rm -f "$headers" "$body"
+  else
+    echo "login: FAILED"; head -1 "$headers"; head -c 1000 "$body"; echo
+    rm -f "$headers" "$body"
+    exit 1
+  fi
 }
 
 uid=$(stat -c %u "$new/data" 2>/dev/null || stat -c %u "$new/images")
@@ -50,8 +61,15 @@ du -sh "$new"
 
 wait_ready
 echo "== owner setup (403 means it's already set up)"
-c -H "Content-Type: application/json" -X POST "$api/authentication/setup/" \
-  -d "{\"setup\":[{\"name\":\"$name\",\"email\":\"richard@r6l7.com\",\"password\":\"$pw\",\"blogTitle\":\"tmp\"}]}" -o /dev/null -w "%{http_code}\n"
+setup_body=$(mktemp)
+code=$(c -H "Content-Type: application/json" -X POST "$api/authentication/setup/" \
+  -d "{\"setup\":[{\"name\":\"$name\",\"email\":\"richard@r6l7.com\",\"password\":$pwj,\"blogTitle\":\"tmp\"}]}" -o "$setup_body" -w "%{http_code}")
+echo "$code"
+case $code in
+  201|403) ;;
+  *) head -c 1000 "$setup_body"; echo; rm -f "$setup_body"; exit 1 ;;
+esac
+rm -f "$setup_body"
 
 login
 
