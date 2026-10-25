@@ -30,7 +30,7 @@
       r6l7Ghost6ContentPath = "/var/ghost6/r6l7";
 
       # Which Ghost nginx sends the blogs to.  Flip to switch over, or back.
-      useGhost6 = false;
+      useGhost6 = true;
       blogPorta8l7 = if useGhost6 then ghost6Porta8l7 else ghostPorta8l7;
       blogPortr6l7 = if useGhost6 then ghost6Portr6l7 else ghostPortr6l7;
 
@@ -120,10 +120,16 @@
           services.ghost-docker = {
             enable = true;
             image = ghost6Image;
-            # Ghost 6 emails a code for logins from new devices, which would block
-            # the import script.  Only turned off while nginx is not sending any
-            # traffic to Ghost 6; it binds to 127.0.0.1.
-            extraEnvironment = nixpkgs.lib.optionalAttrs (!useGhost6) {
+            extraEnvironment = {
+              # Mailgun is only authenticated for blog.a8l7.com; mail from
+              # anything else (eg. Ghost's default noreply@blog.r6l7.com) fails
+              # domain authentication and lands in spam.  Ghost puts the blog
+              # title in front as the display name.
+              mail__from = "noreply@blog.a8l7.com";
+            } // nixpkgs.lib.optionalAttrs (!useGhost6) {
+              # Ghost 6 emails a code for logins from new devices, which would
+              # block the import script.  Only turned off while nginx is not
+              # sending any traffic to Ghost 6; it binds to 127.0.0.1.
               security__staffDeviceVerification = "false";
             };
             blogs.a8l7 = {
